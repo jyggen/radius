@@ -64,12 +64,13 @@ jobs:
             <<: *STANDARD_TEST_JOB
             stage: Test
             php: 7.2
+            env: COMPOSER_FLAGS="--ignore-platform-reqs" PHP_CS_FIXER_IGNORE_ENV=1
 
         -
             <<: *STANDARD_TEST_JOB
             stage: Test
             php: 7.2
-            env: COLLECT_COVERAGE=1
+            env: COLLECT_COVERAGE=1 COMPOSER_FLAGS="--ignore-platform-reqs" PHP_CS_FIXER_IGNORE_ENV=1
             before_install:
                 - phpdbg --version 2> /dev/null || { echo 'No phpdbg'; export COLLECT_COVERAGE=0; }
                 - if [ $COLLECT_COVERAGE == 0 ]; then travis_terminate 0; fi
@@ -83,7 +84,7 @@ jobs:
             <<: *STANDARD_TEST_JOB
             stage: Test
             php: nightly
-            env: COMPOSER_FLAGS="--ignore-platform-reqs"
+            env: COMPOSER_FLAGS="--ignore-platform-reqs" PHP_CS_FIXER_IGNORE_ENV=1
 
 allow_failures:
     - php: nightly
