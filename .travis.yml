@@ -42,7 +42,7 @@ jobs:
                 - composer info -D | sort
             script:
                 - vendor/bin/phpunit || travis_terminate 1
-                - php-cs-fixer --diff --dry-run -v fix
+                - vendor/bin/php-cs-fixer --diff --dry-run -v fix
 
         -
             <<: *STANDARD_TEST_JOB
