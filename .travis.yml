@@ -32,7 +32,7 @@ jobs:
                 - travis_retry composer update $DEFAULT_COMPOSER_FLAGS $COMPOSER_FLAGS
                 - composer info -D | sort
             script:
-                - $HOME/.composer/vendor/bin/phpstan analyse -l 7 ./src/ ./functions.php
+                - $HOME/.composer/vendor/bin/phpstan analyse -l 7 src/ functions.php
 
         - &STANDARD_TEST_JOB
             stage: Fast Test

@@ -55,8 +55,6 @@ final class Client
      */
     public function send(Packet $packet)
     {
-        dump($packet);
-
         $request = $this->encoder->encode($packet);
 
         $this->socket->write($request);
