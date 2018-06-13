@@ -1,8 +1,19 @@
 {
     "name": "boo/radius",
-    "description": "yolo",
+    "description": "A PHP RADIUS client and server implementation",
+    "keywords": ["RADIUS"],
     "type": "library",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Jonas Stendahl",
+            "email": "jonas@stendahl.me"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/jyggen/bnet/issues",
+        "source": "https://github.com/jyggen/bnet"
+    },
     "require": {
         "php": ">=5.5",
         "clue/socket-raw": "^1.3",
@@ -21,6 +32,16 @@
             "Boo\\Radius\\": "src/"
         },
         "files": ["functions.php"]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Boo\\Radius\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        }
     },
     "config": {
         "platform": {

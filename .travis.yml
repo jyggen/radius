@@ -27,12 +27,16 @@ jobs:
             php: 7.2
             env: COMPOSER_FLAGS="--no-dev --prefer-stable"
             install:
+                - travis_retry composer global require $DEFAULT_COMPOSER_FLAGS localheinz/composer-normalize
+                - travis_retry composer global require $DEFAULT_COMPOSER_FLAGS maglnet/composer-require-checker
                 - travis_retry composer global require $DEFAULT_COMPOSER_FLAGS phpstan/phpstan
                 - composer global info -D | sort
                 - travis_retry composer update $DEFAULT_COMPOSER_FLAGS $COMPOSER_FLAGS
                 - composer info -D | sort
             script:
-                - $HOME/.composer/vendor/bin/phpstan analyse -l 7 src/ functions.php
+                - $HOME/.composer/vendor/bin/composer-require-checker check composer.json || travis_terminate 1
+                - $HOME/.composer/vendor/bin/phpstan analyse -l 7 src/ functions.php || travis_terminate 1
+                - composer global normalize ./composer.json --dry-run
 
         - &STANDARD_TEST_JOB
             stage: Fast Test
