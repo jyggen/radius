@@ -34,8 +34,8 @@ jobs:
                 - travis_retry composer update $DEFAULT_COMPOSER_FLAGS $COMPOSER_FLAGS
                 - composer info -D | sort
             script:
-                - $HOME/.composer/vendor/bin/composer-require-checker check composer.json || travis_terminate 1
                 - $HOME/.composer/vendor/bin/phpstan analyse -l 7 src/ functions.php || travis_terminate 1
+                - $HOME/.composer/vendor/bin/composer-require-checker check --config-file=.composer-require-checker.json composer.json || travis_terminate 1
                 - composer global normalize ./composer.json --dry-run
 
         - &STANDARD_TEST_JOB
