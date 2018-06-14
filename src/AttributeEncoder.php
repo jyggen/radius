@@ -12,7 +12,7 @@
 namespace Boo\Radius;
 
 use Boo\Radius\Attributes\AttributeInterface;
-use Boo\Radius\Exceptions\AttributeException;
+use Boo\Radius\Exceptions\InvalidLengthException;
 
 final class AttributeEncoder
 {
@@ -23,13 +23,23 @@ final class AttributeEncoder
     const VENDOR_SPECIFIC_TYPE = 26;
 
     /**
-     * @var AttributeFactory
+     * @var array<int, string>
      */
-    private $factory;
+    private $attributes = [];
 
-    public function __construct(AttributeFactory $factory)
+    /**
+     * @var array<int, array<int, string>>
+     */
+    private $vendorAttributes = [];
+
+    public function __construct()
     {
-        $this->factory = $factory;
+        $this->registerDictionary(new Dictionary\Rfc2865());
+        $this->registerDictionary(new Dictionary\Rfc2866());
+        $this->registerDictionary(new Dictionary\Rfc2867());
+        $this->registerDictionary(new Dictionary\Rfc2868());
+        $this->registerDictionary(new Dictionary\Rfc2869());
+        $this->registerDictionary(new Dictionary\Rfc5176());
     }
 
     /**
@@ -37,7 +47,7 @@ final class AttributeEncoder
      * @param string $authenticator
      * @param string $secret
      *
-     * @throws AttributeException
+     * @throws InvalidLengthException
      *
      * @return array
      */
@@ -52,13 +62,19 @@ final class AttributeEncoder
             $parts['packet'] = substr($parts['packet'], 0, $length);
 
             if (strlen($parts['packet']) !== $length) {
-                // @todo: throw exception
-                die('attribute length');
+                // @todo: should be distinguished somehow so RFC 2865 can be followed.
+                throw new InvalidLengthException('Invalid attribute length');
             }
 
             if ($parts['type'] !== self::VENDOR_SPECIFIC_TYPE) {
-                $attributes[] = $this->factory->createAttributeFromType(
-                    $parts['type'],
+                /** @var AttributeInterface $encoder */
+                $encoder = $this->getAttributeFromType($parts['type']);
+
+                if (array_key_exists($parts['type'], $attributes) === false) {
+                    $attributes[$parts['type']] = [];
+                }
+
+                $attributes[$parts['type']][] = $encoder::decode(
                     $parts['packet'],
                     $authenticator,
                     $secret
@@ -73,30 +89,66 @@ final class AttributeEncoder
                 die('vendor attribute length');
             }
 
-            $attributes[] = $this->factory->createVendorSpecificFromType(
-                $vendorParts['vendor'],
-                $vendorParts['type'],
-                $vendorParts['packet'],
-                $authenticator,
-                $secret
-            );
+            die('vendor?');
         }
 
         return $attributes;
     }
 
     /**
-     * @param AttributeInterface $attribute
-     * @param string             $authenticator
-     * @param string             $secret
+     * @param Packet $packet
      *
      * @return string
      */
-    public function encode(AttributeInterface $attribute, $authenticator, $secret)
+    public function encode(Packet $packet)
     {
-        $encoded = $attribute->encode($authenticator, $secret);
-        $length = strlen($encoded) + 2;
+        $message = '';
+        $authenticator = $packet->getAuthenticator();
+        $secret = $packet->getSecret();
 
-        return pack(self::ENCODE_FORMAT, $attribute->getType(), $length, $encoded);
+        foreach ($packet->getAttributes() as $type => $values) {
+            /** @var AttributeInterface $encoder */
+            $encoder = $this->getAttributeFromType($type);
+
+            foreach ($values as $value) {
+                $encoded = $encoder::encode($value, $authenticator, $secret);
+                $length = strlen($encoded) + 2;
+                $message .= pack(self::ENCODE_FORMAT, $type, $length, $encoded);
+            }
+        }
+
+        return $message;
+    }
+
+    /**
+     * @param DictionaryInterface $dictionary
+     */
+    public function registerDictionary(DictionaryInterface $dictionary)
+    {
+        foreach ($dictionary->getAttributes() as $type => $class) {
+            $this->attributes[$type] = $class['type'];
+        }
+
+        foreach ($dictionary->getVendorAttributes() as $vendorId => $attributes) {
+            $this->vendorAttributes[$vendorId] = [];
+
+            foreach ($attributes as $type => $class) {
+                $this->vendorAttributes[$vendorId][$type] = $class['type'];
+            }
+        }
+    }
+
+    /**
+     * @param int $type
+     *
+     * @return string
+     */
+    private function getAttributeFromType($type)
+    {
+        if (array_key_exists($type, $this->attributes) === false) {
+            die('unknown attribute "'.$type.'"');
+        }
+
+        return $this->attributes[$type];
     }
 }

@@ -1,0 +1,184 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * This file is part of boo/radius.
+ *
+ * (c) Jonas Stendahl <jonas@stendahl.me>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+namespace Boo\Radius;
+
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+require dirname(__DIR__).'/vendor/autoload.php';
+
+$application = new Application(__FILE__);
+$command = $application->register('echo');
+$resolver = function ($type, array $options = []) {
+    if (array_key_exists('encrypt', $options)) {
+        switch ((int) $options['encrypt']) {
+            case 1:
+                return Attributes\StringEncryptOneAttribute::class;
+            case 2:
+                return Attributes\StringEncryptTwoAttribute::class;
+            default:
+                throw new \RuntimeException('Unknown encrypt mode "'.$options['encrypt'].'"');
+        }
+    }
+
+    switch ($type) {
+        case 'date':
+            return Attributes\DateAttribute::class;
+        case 'integer':
+            return Attributes\IntegerAttribute::class;
+        case 'ipaddr':
+            return Attributes\IpAddressAttribute::class;
+        case 'octets':
+        case 'octets[8]':
+        case 'octets[14]':
+        case 'octets[16]':
+            return Attributes\OctetsAttribute::class;
+        case 'string':
+            return Attributes\StringAttribute::class;
+        case 'string encrypt=1':
+            return Attributes\StringEncryptOneAttribute::class;
+        default:
+            throw new \RuntimeException('Unknown type "'.$type.'"');
+    }
+};
+
+$command->addArgument('source', InputArgument::REQUIRED);
+$command->addArgument('name', InputArgument::REQUIRED);
+$command->setCode(function (InputInterface $input, OutputInterface $output) use ($resolver) {
+    $source = trim($input->getArgument('source'));
+    $name = trim($input->getArgument('name'));
+    $dictionary = file_get_contents($source);
+    $lines = explode("\n", $dictionary);
+    $vendorContext = null;
+    $attributes = [];
+    $vendors = [];
+    $values = [];
+
+    foreach ($lines as $line) {
+        $line = trim($line);
+
+        if ($line === '' || strpos($line, '#') === 0) {
+            continue;
+        }
+
+        $commentPos = strpos($line, '#');
+        $comment = null;
+
+        if ($commentPos !== false) {
+            $comment = trim(substr($line, $commentPos + 1));
+            $line = substr($line, 0, $commentPos);
+            $line = rtrim($line);
+        }
+
+        $line = preg_replace("/\s+/", "\t", $line);
+        $parts = explode("\t", $line);
+        $numOfParts = count($parts);
+
+        switch ($parts[0]) {
+            case 'ATTRIBUTE':
+                if ($numOfParts < 4 || $numOfParts > 5) {
+                    throw new \RuntimeException('Unable to parse "'.$line.'"');
+                }
+
+                if ($parts[3] === 'vsa') { // Vendor-Specific is handled separately.
+                    break;
+                }
+
+                $options = [];
+
+                if (array_key_exists(4, $parts)) {
+                    $options = array_reduce(explode(',', $parts[4]), function (array $carry, $option) {
+                        $parts = explode('=', $option);
+                        $value = array_key_exists(1, $parts) ? $parts[1] : null;
+                        $carry[$parts[0]] = $value;
+
+                        return $carry;
+                    }, []);
+                }
+
+                $constant = strtoupper($parts[1]);
+                $constant = preg_replace('/[^A-Z\d_]+/', '_', $constant);
+                $attributes[$parts[2]] = [
+                    'comment' => $comment,
+                    'constant' => $constant,
+                    'has_tag' => array_key_exists('has_tag', $options) ? 'true' : 'false',
+                    'name' => $parts[1],
+                    'type' => (new \ReflectionClass($resolver($parts[3], $options)))->getShortName(),
+                    'vendor' => $vendorContext,
+                ];
+                break;
+            case 'BEGIN-VENDOR':
+                if ($numOfParts !== 2) {
+                    throw new \RuntimeException('Unable to parse "'.$line.'"');
+                }
+
+                $vendorContext = $parts[1];
+                break;
+            case 'END-VENDOR':
+                if ($numOfParts !== 2) {
+                    throw new \RuntimeException('Unable to parse "'.$line.'"');
+                }
+
+                $vendorContext = null;
+                break;
+            case 'VALUE':
+                if ($numOfParts !== 4) {
+                    throw new \RuntimeException('Unable to parse "'.$line.'"');
+                }
+
+                if (ctype_digit($parts[3]) === false) {
+                    throw new \RuntimeException($parts[3].' is not an integer');
+                }
+
+                $constant = strtoupper($parts[1].'_'.$parts[2]);
+                $constant = preg_replace('/[^A-Z\d_]+/', '_', $constant);
+                $values[] = [
+                    'comment' => $comment,
+                    'constant' => $constant,
+                    'value' => (int) $parts[3],
+                    'vendor' => $vendorContext,
+                ];
+                break;
+            case 'VENDOR':
+                if ($numOfParts !== 3) {
+                    throw new \RuntimeException('Unable to parse "'.$line.'"');
+                }
+
+                $constant = strtoupper($parts[1]);
+                $constant = preg_replace('/[^A-Z\d_]+/', '_', $constant);
+                $vendors[$parts[1]] = [
+                    'comment' => $comment,
+                    'constant' => $constant,
+                    'type' => (int) $parts[2],
+                ];
+                break;
+            default:
+                throw new \RuntimeException('Unknown kind "'.$parts[0].'"');
+        }
+    }
+
+    $loader = new \Twig_Loader_Filesystem(dirname(__DIR__).'/resources/templates');
+    $twig = new \Twig_Environment($loader);
+
+    $output->write($twig->render('dictionary.php.twig', [
+        'name' => $name,
+        'attributes' => $attributes,
+        'values' => $values,
+        'vendors' => $vendors,
+    ]));
+});
+
+$application->setDefaultCommand('echo', true);
+$application->run();

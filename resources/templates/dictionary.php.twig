@@ -1,0 +1,76 @@
+<?php
+
+/*
+ * This file is part of boo/radius.
+ *
+ * (c) Jonas Stendahl <jonas@stendahl.me>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
+namespace Boo\Radius\Dictionary;
+
+use Boo\Radius\Attributes;
+use Boo\Radius\DictionaryInterface;
+
+final class {{ name }} implements DictionaryInterface
+{
+{% for type, attribute in attributes %}
+    const ATTRIBUTE_{{ attribute.constant }} = {{ attribute.comment ? "#{type}; // #{attribute.comment}" : "#{type};" }}
+{% endfor %}
+{% if attributes is not empty %}
+
+{% endif %}
+{% for value in values %}
+    const VALUE_{{ value.constant }} = {{ value.comment ? "#{value.value}; // #{value.comment}" : "#{value.value};" }}
+{% endfor %}
+{% if values is not empty %}
+
+{% endif %}
+{% for vendor in vendors %}
+    const VENDOR_{{ vendor.constant }} = {{ vendor.comment ? "#{vendor.type}; // #{vendor.comment}" : "#{vendor.type};" }}
+{% endfor %}
+{% if vendors is not empty %}
+
+{% endif %}
+    /**
+     * {@inheritdoc}
+     */
+    public function getAttributes()
+    {
+        return [
+{% for type, attribute in attributes %}
+{% if not attribute.vendor %}
+            self::ATTRIBUTE_{{ attribute.constant }} => [
+                'has_tag' => {{ attribute.has_tag }},
+                'name' => '{{ attribute.name }}',
+                'type' => Attributes\{{ attribute.type }}::class,
+            ],
+{% endif %}
+{% endfor %}
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVendorAttributes()
+    {
+        return [
+{% for name, vendor in vendors %}
+            self::VENDOR_{{ vendor.constant }} => [
+{% for type, attribute in attributes %}
+{% if attribute.vendor is same as(name) %}
+                self::ATTRIBUTE_{{ attribute.constant }} => [
+                    'has_tag' => {{ attribute.has_tag }},
+                    'name' => '{{ attribute.name }}',
+                    'type' => Attributes\{{ attribute.type }}::class,
+                ],
+{% endif %}
+{% endfor %}
+            ],
+{% endfor %}
+        ];
+    }
+}

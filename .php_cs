@@ -55,6 +55,7 @@ $rules = [
 
 $finder->in(__DIR__);
 $finder->name('.php_cs');
+$finder->name('generate');
 $finder->ignoreDotFiles(false);
 
 $config->setFinder($finder);

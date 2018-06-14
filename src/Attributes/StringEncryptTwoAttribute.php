@@ -11,15 +11,17 @@
 
 namespace Boo\Radius\Attributes;
 
-final class UserPasswordAttribute extends AbstractAttribute
+final class StringEncryptTwoAttribute implements AttributeInterface
 {
-    const TYPE = 2;
-
     /**
      * {@inheritdoc}
+     *
+     * @return string
      */
     public static function decode($value, $authenticator, $secret)
     {
+        $salt = substr($value, 0, 2);
+        $value = substr($value, 2);
         $valueLength = strlen($value);
 
         if ($valueLength < 16 || $valueLength > 128) {
@@ -34,7 +36,7 @@ final class UserPasswordAttribute extends AbstractAttribute
             die('invalid authenticator');
         }
 
-        $password = md5($secret.$authenticator, true);
+        $password = md5($secret.$authenticator.$salt, true);
         $parts = str_split($value, 16);
 
         foreach (str_split($parts[0], 1) as $i => $character) {
@@ -50,15 +52,27 @@ final class UserPasswordAttribute extends AbstractAttribute
             }
         }
 
-        return parent::decode(rtrim($password, "\x00"), $authenticator, $secret);
+        $passwordLength = unpack('C', substr($password, 0, 2));
+
+        return substr($password, 2, $passwordLength);
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @param string $value
      */
-    public function encode($authenticator, $secret)
+    public static function encode($value, $authenticator, $secret)
     {
-        $password = parent::encode($authenticator, $secret);
+        $salt = random_bytes(2);
+        $password = $value;
+        $passwordLength = strlen($password);
+        $password = pack('C', $passwordLength).$password;
+
+        while (strlen($password) % 16 !== 0) {
+            $password .= "\x00";
+        }
+
         $passwordLength = strlen($password);
 
         if ($passwordLength > 128) {
@@ -73,7 +87,7 @@ final class UserPasswordAttribute extends AbstractAttribute
             die('invalid authenticator');
         }
 
-        $value = md5($secret.$authenticator, true);
+        $value = md5($secret.$authenticator.$salt, true);
         $parts = str_split($password, 16);
 
         foreach (str_split($parts[0], 1) as $i => $character) {
@@ -89,18 +103,6 @@ final class UserPasswordAttribute extends AbstractAttribute
             }
         }
 
-        while (strlen($value) % 16 !== 0) {
-            $value .= "\x00";
-        }
-
-        return $value;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getType()
-    {
-        return self::TYPE;
+        return $salt.$value;
     }
 }

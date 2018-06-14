@@ -23,7 +23,9 @@
         "jakub-onderka/php-parallel-lint": "~1.0.0",
         "php-coveralls/php-coveralls": "~2.1.0",
         "phpunit/phpunit": "~4.8.36",
-        "symfony/var-dumper": "~3.4.11"
+        "symfony/console": "~3.4.11",
+        "symfony/var-dumper": "~3.4.11",
+        "twig/twig": "~1.35.3"
     },
     "config": {
         "platform": {

@@ -16,7 +16,7 @@ use Boo\Radius\Attributes\AttributeInterface;
 final class Packet
 {
     /**
-     * @var AttributeInterface[]
+     * @var array<int, mixed[]>
      */
     private $attributes;
 
@@ -61,29 +61,31 @@ final class Packet
         $this->identifier = $identifier;
         $this->secret = $secret;
         $this->type = $type;
-        $this->attributes = array_map(function (AttributeInterface $attribute) {
-            return $attribute;
-        }, $attributes);
+        $this->attributes = array_map(function ($attribute) {
+            return (array) $attribute;
+        }, $attributes); // @todo: make creation easier, also validate!
     }
 
     /**
      * @param int $type
      *
-     * @return AttributeInterface|null
+     * @return mixed|null
      */
     public function findOneAttributeByType($type)
     {
-        foreach ($this->attributes as $attribute) {
-            if ($attribute->getType() === $type) {
-                return $attribute;
-            }
+        if (array_key_exists($type, $this->attributes) === false) {
+            return null;
         }
 
-        return null;
+        if (count($this->attributes[$type]) === 1) {
+            return $this->attributes[$type][0];
+        }
+
+        die('more than one :('); // @todo: concat? return first?
     }
 
     /**
-     * @return AttributeInterface[]
+     * @return array<int, array<int, mixed>>
      */
     public function getAttributes()
     {

@@ -9,17 +9,8 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Boo\Radius\Attributes;
+namespace Boo\Radius\Exceptions;
 
-final class UserNameAttribute extends AbstractAttribute
+final class ClientException extends RadiusException
 {
-    const TYPE = 1;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getType()
-    {
-        return self::TYPE;
-    }
 }

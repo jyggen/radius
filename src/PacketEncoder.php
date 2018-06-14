@@ -17,7 +17,7 @@ final class PacketEncoder
 {
     const DECODE_FORMAT = 'Ccode/Cidentifier/nlength/a16authenticator/a*attributes';
     const ENCODE_FORMAT = 'CCna16a*';
-    const MAX_PACKET_LENGTH = 4095;
+    const MAX_PACKET_LENGTH = 4096;
 
     /**
      * @var AttributeEncoder
@@ -27,7 +27,7 @@ final class PacketEncoder
     public function __construct(AttributeEncoder $attributeEncoder = null)
     {
         if ($attributeEncoder === null) {
-            $attributeEncoder = new AttributeEncoder(new AttributeFactory());
+            $attributeEncoder = new AttributeEncoder();
         }
 
         $this->attributes = $attributeEncoder;
@@ -82,12 +82,7 @@ final class PacketEncoder
      */
     public function encode(Packet $packet)
     {
-        $attributes = '';
-
-        foreach ($packet->getAttributes() as $attribute) {
-            $attributes .= $this->attributes->encode($attribute, $packet->getAuthenticator(), $packet->getSecret());
-        }
-
+        $attributes = $this->attributes->encode($packet);
         $length = 20 + strlen($attributes);
 
         if ($length > self::MAX_PACKET_LENGTH) {

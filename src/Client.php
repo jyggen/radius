@@ -11,6 +11,7 @@
 
 namespace Boo\Radius;
 
+use Boo\Radius\Exceptions\ClientException;
 use Socket\Raw\Factory;
 use Socket\Raw\Socket;
 
@@ -27,6 +28,11 @@ final class Client
     private $socket;
 
     /**
+     * @var null|float
+     */
+    private $timeout;
+
+    /**
      * @param string             $address
      * @param null|float         $timeout
      * @param null|PacketEncoder $encoder
@@ -39,6 +45,7 @@ final class Client
 
         $this->encoder = $encoder;
         $this->socket = (new Factory())->createClient($address, $timeout);
+        $this->timeout = $timeout;
     }
 
     public function __destruct()
@@ -50,6 +57,7 @@ final class Client
      * @param Packet $packet
      *
      * @throws Exceptions\AttributeException
+     * @throws Exceptions\ClientException
      *
      * @return Packet
      */
@@ -58,6 +66,10 @@ final class Client
         $request = $this->encoder->encode($packet);
 
         $this->socket->write($request);
+
+        if ($this->timeout !== null && $this->socket->selectRead($this->timeout) === false) {
+            throw new ClientException('Client timed out while waiting for a response', SOCKET_ETIMEDOUT);
+        }
 
         $response = $this->socket->read(PacketEncoder::MAX_PACKET_LENGTH);
 
