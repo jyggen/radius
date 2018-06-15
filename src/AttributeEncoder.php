@@ -62,7 +62,6 @@ final class AttributeEncoder
             $parts['packet'] = substr($parts['packet'], 0, $length);
 
             if (strlen($parts['packet']) !== $length) {
-                // @todo: should be distinguished somehow so RFC 2865 can be followed.
                 throw new InvalidLengthException('Invalid attribute length');
             }
 
