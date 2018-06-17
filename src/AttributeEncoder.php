@@ -11,7 +11,6 @@
 
 namespace Boo\Radius;
 
-use Boo\Radius\Attributes\AttributeInterface;
 use Boo\Radius\Exceptions\InvalidLengthException;
 
 final class AttributeEncoder
@@ -20,17 +19,32 @@ final class AttributeEncoder
     const DECODE_VENDOR_FORMAT = 'Nvendor/Ctype/Clength/a*packet';
     const ENCODE_FORMAT = 'CCa*';
     const ENCODE_VENDOR_FORMAT = 'NCCa*';
-    const VENDOR_SPECIFIC_TYPE = 26;
+    const VENDOR_SPECIFIC_ATTRIBUTE = 26;
 
     /**
-     * @var array<int, string>
+     * @var array[]
      */
     private $attributes = [];
 
     /**
-     * @var array<int, array<int, string>>
+     * @var array<string, array>
      */
-    private $vendorAttributes = [];
+    private $attributeNameLookup = [];
+
+    /**
+     * @var array<int, array>
+     */
+    private $attributeTypeLookup = [];
+
+    /**
+     * @var array<int, array>
+     */
+    private $vendors = [];
+
+    /**
+     * @var array<int, array>
+     */
+    private $vendorTypeLookup = [];
 
     public function __construct()
     {
@@ -49,7 +63,7 @@ final class AttributeEncoder
      *
      * @throws InvalidLengthException
      *
-     * @return array
+     * @return array<string, mixed[]>
      */
     public function decode($message, $authenticator, $secret)
     {
@@ -65,30 +79,26 @@ final class AttributeEncoder
                 throw new InvalidLengthException('Invalid attribute length');
             }
 
-            if ($parts['type'] !== self::VENDOR_SPECIFIC_TYPE) {
-                /** @var AttributeInterface $encoder */
-                $encoder = $this->getAttributeFromType($parts['type']);
-
-                if (array_key_exists($parts['type'], $attributes) === false) {
-                    $attributes[$parts['type']] = [];
-                }
-
-                $attributes[$parts['type']][] = $encoder::decode(
-                    $parts['packet'],
-                    $authenticator,
-                    $secret
+            if ($parts['type'] === self::VENDOR_SPECIFIC_ATTRIBUTE) {
+                $attributes = array_merge(
+                    $attributes,
+                    $this->decodeVendorSpecific($authenticator, $secret, $parts['packet'])
                 );
                 continue;
             }
 
-            $vendorParts = unpack(self::DECODE_VENDOR_FORMAT, $parts['packet']);
+            $attribute = $this->getAttributeFromType($parts['type']);
+            $decoded = $attribute['encoder']::decode(
+                $parts['packet'],
+                $authenticator,
+                $secret
+            );
 
-            if (strlen($parts['packet']) - 4 !== $vendorParts['length']) {
-                // @todo: throw exception
-                die('vendor attribute length');
+            if (array_key_exists($attribute['name'], $attributes) === false) {
+                $attributes[$attribute['name']] = [];
             }
 
-            die('vendor?');
+            $attributes[$attribute['name']][] = $decoded;
         }
 
         return $attributes;
@@ -105,14 +115,18 @@ final class AttributeEncoder
         $authenticator = $packet->getAuthenticator();
         $secret = $packet->getSecret();
 
-        foreach ($packet->getAttributes() as $type => $values) {
-            /** @var AttributeInterface $encoder */
-            $encoder = $this->getAttributeFromType($type);
+        foreach ($packet->getAttributes() as $name => $values) {
+            $attribute = $this->getAttributeFromName($name);
+
+            if ($attribute['vendor'] !== null) {
+                $values = $this->encodeVendorSpecific($packet, $attribute, $values);
+                $attribute = $this->getAttributeFromType(self::VENDOR_SPECIFIC_ATTRIBUTE);
+            }
 
             foreach ($values as $value) {
-                $encoded = $encoder::encode($value, $authenticator, $secret);
+                $encoded = $attribute['encoder']::encode($value, $authenticator, $secret);
                 $length = strlen($encoded) + 2;
-                $message .= pack(self::ENCODE_FORMAT, $type, $length, $encoded);
+                $message .= pack(self::ENCODE_FORMAT, $attribute['type'], $length, $encoded);
             }
         }
 
@@ -124,30 +138,145 @@ final class AttributeEncoder
      */
     public function registerDictionary(DictionaryInterface $dictionary)
     {
-        foreach ($dictionary->getAttributes() as $type => $class) {
-            $this->attributes[$type] = $class['type'];
+        // @todo validate dictionary somehow?
+
+        foreach ($dictionary->getVendors() as $vendor) {
+            $this->vendors[$vendor['identifier']] = $vendor;
+            $this->vendorTypeLookup[$vendor['identifier']] = [];
         }
 
-        foreach ($dictionary->getVendorAttributes() as $vendorId => $attributes) {
-            $this->vendorAttributes[$vendorId] = [];
+        foreach ($dictionary->getAttributes() as $attribute) {
+            $this->attributes[] = $attribute;
 
-            foreach ($attributes as $type => $class) {
-                $this->vendorAttributes[$vendorId][$type] = $class['type'];
+            end($this->attributes);
+
+            $key = key($this->attributes);
+            $this->attributeNameLookup[$attribute['name']] = &$this->attributes[$key];
+
+            if ($attribute['vendor'] === null) {
+                $this->attributeTypeLookup[$attribute['type']] = &$this->attributes[$key];
+                continue;
             }
+
+            $this->vendorTypeLookup[$attribute['vendor']][$attribute['type']] = &$this->attributes[$key];
         }
+
+        foreach ($dictionary->getVendors() as $vendor) {
+            $this->vendors[$vendor['identifier']] = $vendor;
+        }
+    }
+
+    /**
+     * @param string $authenticator
+     * @param string $secret
+     * @param string $message
+     *
+     * @throws InvalidLengthException
+     *
+     * @return array<string, mixed[]>
+     */
+    private function decodeVendorSpecific($authenticator, $secret, $message)
+    {
+        $attributes = [];
+
+        while (strlen($message) > 0) {
+            $parts = unpack(self::DECODE_VENDOR_FORMAT, $message);
+            $length = $parts['length'] - 2;
+            $message = substr($parts['packet'], $length);
+            $parts['packet'] = substr($parts['packet'], 0, $length);
+
+            if (strlen($parts['packet']) !== $length) {
+                throw new InvalidLengthException('Invalid vendor attribute length');
+            }
+
+            $attribute = $this->getVendorAttributeFromType($parts['vendor'], $parts['type']);
+            $decoded = $attribute['encoder']::decode(
+                $parts['packet'],
+                $authenticator,
+                $secret
+            );
+
+            if (array_key_exists($attribute['name'], $attributes) === false) {
+                $attributes[$attribute['name']] = [];
+            }
+
+            $attributes[$attribute['name']][] = $decoded;
+        }
+
+        return $attributes;
+    }
+
+    /**
+     * @param Packet               $packet
+     * @param array<string, mixed> $attribute
+     * @param mixed[]              $values
+     *
+     * @return string[]
+     */
+    private function encodeVendorSpecific(Packet $packet, array $attribute, array $values)
+    {
+        $authenticator = $packet->getAuthenticator();
+        $secret = $packet->getSecret();
+
+        foreach ($values as $key => $value) {
+            $encoded = $attribute['encoder']::encode($value, $authenticator, $secret);
+            $length = strlen($encoded) + 2;
+            $values[$key] = pack(
+                self::ENCODE_VENDOR_FORMAT,
+                $attribute['vendor'],
+                $attribute['type'],
+                $length,
+                $encoded
+            );
+        }
+
+        return $values;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return array<string, mixed>
+     */
+    private function getAttributeFromName($name)
+    {
+        if (array_key_exists($name, $this->attributeNameLookup) === false) {
+            die('unknown attribute "'.$name.'"');
+        }
+
+        return $this->attributeNameLookup[$name];
     }
 
     /**
      * @param int $type
      *
-     * @return string
+     * @return array<string, mixed>
      */
     private function getAttributeFromType($type)
     {
-        if (array_key_exists($type, $this->attributes) === false) {
+        if (array_key_exists($type, $this->attributeTypeLookup) === false) {
             die('unknown attribute "'.$type.'"');
         }
 
-        return $this->attributes[$type];
+        return $this->attributeTypeLookup[$type];
+    }
+
+    /**
+     * @param int $vendor
+     * @param int $type
+     *
+     * @return array<string, mixed>
+     */
+    private function getVendorAttributeFromType($vendor, $type)
+    {
+        if (array_key_exists($vendor, $this->vendorTypeLookup) === false) {
+            die('unknown vendor "'.$vendor.'"');
+        }
+
+        if (array_key_exists($type, $this->vendorTypeLookup[$vendor]) === false) {
+            die('unknown type "'.$type.'" for vendor "'.$this->vendors[$vendor]['name'].'"');
+        }
+
+        return $this->vendorTypeLookup[$vendor][$type];
     }
 }

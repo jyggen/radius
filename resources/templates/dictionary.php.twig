@@ -11,66 +11,59 @@
 
 namespace Boo\Radius\Dictionary;
 
+{% if attributes is not empty %}
 use Boo\Radius\Attributes;
+{% endif %}
 use Boo\Radius\DictionaryInterface;
 
 final class {{ name }} implements DictionaryInterface
 {
-{% for type, attribute in attributes %}
-    const ATTRIBUTE_{{ attribute.constant }} = {{ attribute.comment ? "#{type}; // #{attribute.comment}" : "#{type};" }}
-{% endfor %}
-{% if attributes is not empty %}
-
-{% endif %}
 {% for value in values %}
-    const VALUE_{{ value.constant }} = {{ value.comment ? "#{value.value}; // #{value.comment}" : "#{value.value};" }}
+    const {{ value.constant }} = {{ value.comment ? "#{value.value}; // #{value.comment}" : "#{value.value};" }}
 {% endfor %}
 {% if values is not empty %}
 
 {% endif %}
-{% for vendor in vendors %}
-    const VENDOR_{{ vendor.constant }} = {{ vendor.comment ? "#{vendor.type}; // #{vendor.comment}" : "#{vendor.type};" }}
+    /**
+     * @var array[]
+     */
+    private static $attributes = [
+{% for attribute in attributes %}
+        [
+            'encoder' => Attributes\{{ attribute.encoder }}::class,
+            'has_tag' => {{ attribute.has_tag }},
+            'name' => '{{ attribute.name }}',
+            'type' => {{ attribute.type }},
+            'vendor' => {{ attribute.vendor ? "#{attribute.vendor}" : "null" }},
+        ],
 {% endfor %}
-{% if vendors is not empty %}
+    ];
 
-{% endif %}
+    /**
+     * @var array[]
+     */
+    private static $vendors = [
+{% for vendor in vendors %}
+        [
+           'identifier' => {{ vendor.identifier }},
+           'name' => '{{ vendor.name }}',
+        ],
+{% endfor %}
+    ];
+
     /**
      * {@inheritdoc}
      */
     public function getAttributes()
     {
-        return [
-{% for type, attribute in attributes %}
-{% if not attribute.vendor %}
-            self::ATTRIBUTE_{{ attribute.constant }} => [
-                'has_tag' => {{ attribute.has_tag }},
-                'name' => '{{ attribute.name }}',
-                'type' => Attributes\{{ attribute.type }}::class,
-            ],
-{% endif %}
-{% endfor %}
-        ];
+        return self::$attributes;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getVendorAttributes()
+    public function getVendors()
     {
-        return [
-{% for name, vendor in vendors %}
-            self::VENDOR_{{ vendor.constant }} => [
-{% for type, attribute in attributes %}
-{% if attribute.vendor is same as(name) %}
-                self::ATTRIBUTE_{{ attribute.constant }} => [
-                    'has_tag' => {{ attribute.has_tag }},
-                    'name' => '{{ attribute.name }}',
-                    'type' => Attributes\{{ attribute.type }}::class,
-                ],
-{% endif %}
-{% endfor %}
-            ],
-{% endfor %}
-        ];
+        return self::$vendors;
     }
 }

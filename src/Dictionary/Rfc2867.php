@@ -16,41 +16,52 @@ use Boo\Radius\DictionaryInterface;
 
 final class Rfc2867 implements DictionaryInterface
 {
-    const ATTRIBUTE_ACCT_TUNNEL_CONNECTION = 68;
-    const ATTRIBUTE_ACCT_TUNNEL_PACKETS_LOST = 86;
+    const ACCT_STATUS_TYPE_TUNNEL_START = 9;
+    const ACCT_STATUS_TYPE_TUNNEL_STOP = 10;
+    const ACCT_STATUS_TYPE_TUNNEL_REJECT = 11;
+    const ACCT_STATUS_TYPE_TUNNEL_LINK_START = 12;
+    const ACCT_STATUS_TYPE_TUNNEL_LINK_STOP = 13;
+    const ACCT_STATUS_TYPE_TUNNEL_LINK_REJECT = 14;
 
-    const VALUE_ACCT_STATUS_TYPE_TUNNEL_START = 9;
-    const VALUE_ACCT_STATUS_TYPE_TUNNEL_STOP = 10;
-    const VALUE_ACCT_STATUS_TYPE_TUNNEL_REJECT = 11;
-    const VALUE_ACCT_STATUS_TYPE_TUNNEL_LINK_START = 12;
-    const VALUE_ACCT_STATUS_TYPE_TUNNEL_LINK_STOP = 13;
-    const VALUE_ACCT_STATUS_TYPE_TUNNEL_LINK_REJECT = 14;
+    /**
+     * @var array[]
+     */
+    private static $attributes = [
+        [
+            'encoder' => Attributes\StringAttribute::class,
+            'has_tag' => false,
+            'name' => 'Acct-Tunnel-Connection',
+            'type' => 68,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => Attributes\IntegerAttribute::class,
+            'has_tag' => false,
+            'name' => 'Acct-Tunnel-Packets-Lost',
+            'type' => 86,
+            'vendor' => null,
+        ],
+    ];
+
+    /**
+     * @var array[]
+     */
+    private static $vendors = [
+    ];
 
     /**
      * {@inheritdoc}
      */
     public function getAttributes()
     {
-        return [
-            self::ATTRIBUTE_ACCT_TUNNEL_CONNECTION => [
-                'has_tag' => false,
-                'name' => 'Acct-Tunnel-Connection',
-                'type' => Attributes\StringAttribute::class,
-            ],
-            self::ATTRIBUTE_ACCT_TUNNEL_PACKETS_LOST => [
-                'has_tag' => false,
-                'name' => 'Acct-Tunnel-Packets-Lost',
-                'type' => Attributes\IntegerAttribute::class,
-            ],
-        ];
+        return self::$attributes;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getVendorAttributes()
+    public function getVendors()
     {
-        return [
-        ];
+        return self::$vendors;
     }
 }

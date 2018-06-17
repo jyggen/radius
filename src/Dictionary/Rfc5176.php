@@ -15,24 +15,34 @@ use Boo\Radius\DictionaryInterface;
 
 final class Rfc5176 implements DictionaryInterface
 {
-    const VALUE_ERROR_CAUSE_INVALID_ATTRIBUTE_VALUE = 407;
-    const VALUE_ERROR_CAUSE_MULTIPLE_SESSION_SELECTION_UNSUPPORTED = 508;
+    const ERROR_CAUSE_INVALID_ATTRIBUTE_VALUE = 407;
+    const ERROR_CAUSE_MULTIPLE_SESSION_SELECTION_UNSUPPORTED = 508;
+
+    /**
+     * @var array[]
+     */
+    private static $attributes = [
+    ];
+
+    /**
+     * @var array[]
+     */
+    private static $vendors = [
+    ];
 
     /**
      * {@inheritdoc}
      */
     public function getAttributes()
     {
-        return [
-        ];
+        return self::$attributes;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getVendorAttributes()
+    public function getVendors()
     {
-        return [
-        ];
+        return self::$vendors;
     }
 }

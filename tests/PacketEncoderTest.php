@@ -11,6 +11,7 @@
 
 namespace Boo\Radius\Tests;
 
+use Boo\Radius\AttributeEncoder;
 use Boo\Radius\Dictionary;
 use Boo\Radius\Exceptions\InvalidLengthException;
 use Boo\Radius\Exceptions\RadiusException;
@@ -19,12 +20,31 @@ use Boo\Radius\PacketEncoder;
 use Boo\Radius\PacketType;
 use PHPUnit\Framework\TestCase;
 
-final class Rfc2865Test extends TestCase
+final class PacketEncoderTest extends TestCase
 {
+    public function testCoaRequestWithVendorAttribute()
+    {
+        $secret = 'mikrotik123';
+        $request = "\x2b\x73\x00\x4e\x58\x87\x0d\xb1\x8d\xf2\x0e\x8e\x2a\x35\x08\x37\x83\x33\x1f\xa3\x01\x22\x30\x31\x33\x30\x61\x30\x63\x35\x65\x64\x35\x65\x34\x30\x36\x30\x38\x62\x36\x35\x64\x64\x64\x39\x62\x34\x38\x65\x61\x61\x66\x32\x08\x06\xc0\xa8\x34\xfd\x1b\x06\x00\x00\x0b\xb8\x1a\x0c\x00\x00\x3a\x8c\x11\x06\x02\xfa\xf0\x80";
+        $attributeEncoder = new AttributeEncoder();
+        $encoder = new PacketEncoder($attributeEncoder);
+
+        $attributeEncoder->registerDictionary(new Dictionary\MikroTik());
+
+        $packet = new Packet(PacketType::COA_REQUEST(), $secret, [
+            'User-Name' => '0130a0c5ed5e40608b65ddd9b48eaaf2',
+            'Framed-IP-Address' => '192.168.52.253',
+            'Session-Timeout' => 3000,
+            'Mikrotik-Total-Limit' => 50000000,
+        ], null, 115);
+
+        $this->assertSame($request, $encoder->encode($packet));
+    }
+
     /**
      * @throws RadiusException
      */
-    public function testSection71()
+    public function testRfc2865Section71()
     {
         $secret = 'xyzzy5461';
         $request = "\x01\x00\x00\x38\x0f\x40\x3f\x94\x73\x97\x80\x57\xbd\x83\xd5\xcb\x98\xf4\x22\x7a\x01\x06\x6e\x65\x6d\x6f\x02\x12\x0d\xbe\x70\x8d\x93\xd4\x13\xce\x31\x96\xe4\x3f\x78\x2a\x0a\xee\x04\x06\xc0\xa8\x01\x10\x05\x06\x00\x00\x00\x03";
@@ -34,17 +54,17 @@ final class Rfc2865Test extends TestCase
         $this->assertSame(PacketType::ACCESS_REQUEST(), $packet->getType());
         $this->assertSame(0, $packet->getIdentifier());
         $this->assertCount(4, $packet->getAttributes());
-        $this->assertSame('nemo', $packet->findOneAttributeByType(Dictionary\Rfc2865::ATTRIBUTE_USER_NAME));
-        $this->assertSame('arctangent', $packet->findOneAttributeByType(Dictionary\Rfc2865::ATTRIBUTE_USER_PASSWORD));
-        $this->assertSame('192.168.1.16', $packet->findOneAttributeByType(Dictionary\Rfc2865::ATTRIBUTE_NAS_IP_ADDRESS));
-        $this->assertSame(3, $packet->findOneAttributeByType(Dictionary\Rfc2865::ATTRIBUTE_NAS_PORT));
+        $this->assertSame('nemo', $packet->getUniqueAttribute('User-Name'));
+        $this->assertSame('arctangent', $packet->getUniqueAttribute('User-Password'));
+        $this->assertSame('192.168.1.16', $packet->getUniqueAttribute('NAS-IP-Address'));
+        $this->assertSame(3, $packet->getUniqueAttribute('NAS-Port'));
         $this->assertSame($request, $encoder->encode($packet));
 
         $response = "\x02\x00\x00\x26\x86\xfe\x22\x0e\x76\x24\xba\x2a\x10\x05\xf6\xbf\x9b\x55\xe0\xb2\x06\x06\x00\x00\x00\x01\x0f\x06\x00\x00\x00\x00\x0e\x06\xc0\xa8\x01\x03";
         $packet = new Packet(PacketType::ACCESS_ACCEPT(), $secret, [
-            Dictionary\Rfc2865::ATTRIBUTE_SERVICE_TYPE => Dictionary\Rfc2865::VALUE_SERVICE_TYPE_LOGIN_USER,
-            Dictionary\Rfc2865::ATTRIBUTE_LOGIN_SERVICE => Dictionary\Rfc2865::VALUE_LOGIN_SERVICE_TELNET,
-            Dictionary\Rfc2865::ATTRIBUTE_LOGIN_IP_HOST => '192.168.1.3',
+            'Service-Type' => Dictionary\Rfc2865::SERVICE_TYPE_LOGIN_USER,
+            'Login-Service' => Dictionary\Rfc2865::LOGIN_SERVICE_TELNET,
+            'Login-IP-Host' => '192.168.1.3',
         ], $packet->getAuthenticator(), $packet->getIdentifier());
 
         $this->assertSame($response, $encoder->encode($packet));
@@ -54,7 +74,7 @@ final class Rfc2865Test extends TestCase
     /**
      * @throws RadiusException
      */
-    public function testSection72()
+    public function testRfc2865Section72()
     {
         $secret = 'xyzzy5461';
         $encoder = new PacketEncoder();
@@ -64,21 +84,21 @@ final class Rfc2865Test extends TestCase
         $this->assertSame(PacketType::ACCESS_REQUEST(), $packet->getType());
         $this->assertSame(1, $packet->getIdentifier());
         $this->assertCount(6, $packet->getAttributes());
-        $this->assertSame('flopsy', $packet->findOneAttributeByType(Dictionary\Rfc2865::ATTRIBUTE_USER_NAME));
-        $this->assertSame('192.168.1.16', $packet->findOneAttributeByType(Dictionary\Rfc2865::ATTRIBUTE_NAS_IP_ADDRESS));
-        $this->assertSame(20, $packet->findOneAttributeByType(Dictionary\Rfc2865::ATTRIBUTE_NAS_PORT));
-        $this->assertSame(Dictionary\Rfc2865::VALUE_SERVICE_TYPE_FRAMED_USER, $packet->findOneAttributeByType(Dictionary\Rfc2865::ATTRIBUTE_SERVICE_TYPE));
-        $this->assertSame(Dictionary\Rfc2865::VALUE_FRAMED_PROTOCOL_PPP, $packet->findOneAttributeByType(Dictionary\Rfc2865::ATTRIBUTE_FRAMED_PROTOCOL));
+        $this->assertSame('flopsy', $packet->getUniqueAttribute('User-Name'));
+        $this->assertSame('192.168.1.16', $packet->getUniqueAttribute('NAS-IP-Address'));
+        $this->assertSame(20, $packet->getUniqueAttribute('NAS-Port'));
+        $this->assertSame(Dictionary\Rfc2865::SERVICE_TYPE_FRAMED_USER, $packet->getUniqueAttribute('Service-Type'));
+        $this->assertSame(Dictionary\Rfc2865::FRAMED_PROTOCOL_PPP, $packet->getUniqueAttribute('Framed-Protocol'));
         $this->assertSame($request, $encoder->encode($packet));
 
         $response = "\x02\x01\x00\x38\xe8\x6f\xa2\xfe\x28\x70\x33\xad\x2f\x6d\x5c\xa3\xf7\x41\x5d\xa2\x06\x06\x00\x00\x00\x02\x07\x06\x00\x00\x00\x01\x08\x06\xff\xff\xff\xfe\x0a\x06\x00\x00\x00\x00\x0d\x06\x00\x00\x00\x01\x0c\x06\x00\x00\x05\xdc";
         $packet = new Packet(PacketType::ACCESS_ACCEPT(), $secret, [
-            Dictionary\Rfc2865::ATTRIBUTE_SERVICE_TYPE => Dictionary\Rfc2865::VALUE_SERVICE_TYPE_FRAMED_USER,
-            Dictionary\Rfc2865::ATTRIBUTE_FRAMED_PROTOCOL => Dictionary\Rfc2865::VALUE_FRAMED_PROTOCOL_PPP,
-            Dictionary\Rfc2865::ATTRIBUTE_FRAMED_IP_ADDRESS => '255.255.255.254',
-            Dictionary\Rfc2865::ATTRIBUTE_FRAMED_ROUTING => Dictionary\Rfc2865::VALUE_FRAMED_ROUTING_NONE,
-            Dictionary\Rfc2865::ATTRIBUTE_FRAMED_COMPRESSION => Dictionary\Rfc2865::VALUE_FRAMED_COMPRESSION_VAN_JACOBSON_TCP_IP,
-            Dictionary\Rfc2865::ATTRIBUTE_FRAMED_MTU => 1500,
+            'Service-Type' => Dictionary\Rfc2865::SERVICE_TYPE_FRAMED_USER,
+            'Framed-Protocol' => Dictionary\Rfc2865::FRAMED_PROTOCOL_PPP,
+            'Framed-IP-Address' => '255.255.255.254',
+            'Framed-Routing' => Dictionary\Rfc2865::FRAMED_ROUTING_NONE,
+            'Framed-Compression' => Dictionary\Rfc2865::FRAMED_COMPRESSION_VAN_JACOBSON_TCP_IP,
+            'Framed-MTU' => 1500,
         ], $packet->getAuthenticator(), $packet->getIdentifier());
 
         $this->assertSame($response, $encoder->encode($packet));
@@ -88,7 +108,7 @@ final class Rfc2865Test extends TestCase
     /**
      * @throws RadiusException
      */
-    public function testSection73()
+    public function testRfc2865Section73()
     {
         $secret = 'xyzzy5461';
         $encoder = new PacketEncoder();
@@ -98,16 +118,16 @@ final class Rfc2865Test extends TestCase
         $this->assertSame(PacketType::ACCESS_REQUEST(), $packet->getType());
         $this->assertSame(2, $packet->getIdentifier());
         $this->assertCount(4, $packet->getAttributes());
-        $this->assertSame('mopsy', $packet->findOneAttributeByType(Dictionary\Rfc2865::ATTRIBUTE_USER_NAME));
-        $this->assertSame('challenge', $packet->findOneAttributeByType(Dictionary\Rfc2865::ATTRIBUTE_USER_PASSWORD));
-        $this->assertSame('192.168.1.16', $packet->findOneAttributeByType(Dictionary\Rfc2865::ATTRIBUTE_NAS_IP_ADDRESS));
-        $this->assertSame(7, $packet->findOneAttributeByType(Dictionary\Rfc2865::ATTRIBUTE_NAS_PORT));
+        $this->assertSame('mopsy', $packet->getUniqueAttribute('User-Name'));
+        $this->assertSame('challenge', $packet->getUniqueAttribute('User-Password'));
+        $this->assertSame('192.168.1.16', $packet->getUniqueAttribute('NAS-IP-Address'));
+        $this->assertSame(7, $packet->getUniqueAttribute('NAS-Port'));
         $this->assertSame($request, $encoder->encode($packet));
 
         $response = "\x0b\x02\x00\x4e\x36\xf3\xc8\x76\x4a\xe8\xc7\x11\x57\x40\x3c\x0c\x71\xff\x9c\x45\x12\x30\x43\x68\x61\x6c\x6c\x65\x6e\x67\x65\x20\x33\x32\x37\x36\x39\x34\x33\x30\x2e\x20\x20\x45\x6e\x74\x65\x72\x20\x72\x65\x73\x70\x6f\x6e\x73\x65\x20\x61\x74\x20\x70\x72\x6f\x6d\x70\x74\x2e\x18\x0a\x33\x32\x37\x36\x39\x34\x33\x30";
         $packet = new Packet(PacketType::ACCESS_CHALLENGE(), $secret, [
-            Dictionary\Rfc2865::ATTRIBUTE_REPLY_MESSAGE => 'Challenge 32769430.  Enter response at prompt.',
-            Dictionary\Rfc2865::ATTRIBUTE_STATE => "\x33\x32\x37\x36\x39\x34\x33\x30",
+            'Reply-Message' => 'Challenge 32769430.  Enter response at prompt.',
+            'State' => "\x33\x32\x37\x36\x39\x34\x33\x30",
         ], $packet->getAuthenticator(), $packet->getIdentifier());
 
         $this->assertSame($response, $encoder->encode($packet));
@@ -124,7 +144,7 @@ final class Rfc2865Test extends TestCase
     /**
      * @throws RadiusException
      */
-    public function testSection73InvalidAttributeLengthPacket()
+    public function testRfc2865Section73InvalidAttributeLengthPacket()
     {
         $this->setExpectedException(InvalidLengthException::class);
 

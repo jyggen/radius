@@ -11,12 +11,10 @@
 
 namespace Boo\Radius;
 
-use Boo\Radius\Attributes\AttributeInterface;
-
 final class Packet
 {
     /**
-     * @var array<int, mixed[]>
+     * @var array<string, mixed[]>
      */
     private $attributes;
 
@@ -43,12 +41,17 @@ final class Packet
     /**
      * @param PacketType           $type
      * @param string               $secret
-     * @param AttributeInterface[] $attributes
+     * @param array<string, mixed> $attributes
      * @param null|string          $authenticator
      * @param null|string          $identifier
      */
-    public function __construct(PacketType $type, $secret, array $attributes = [], $authenticator = null, $identifier = null)
-    {
+    public function __construct(
+        PacketType $type,
+        $secret,
+        array $attributes,
+        $authenticator = null,
+        $identifier = null
+    ) {
         if ($authenticator === null) {
             $authenticator = random_bytes(16);
         }
@@ -63,29 +66,39 @@ final class Packet
         $this->type = $type;
         $this->attributes = array_map(function ($attribute) {
             return (array) $attribute;
-        }, $attributes); // @todo: make creation easier, also validate!
+        }, $attributes);
     }
 
     /**
-     * @param int $type
+     * @param string $attribute
      *
-     * @return mixed|null
+     * @return array
      */
-    public function findOneAttributeByType($type)
+    public function getAttribute($attribute)
     {
-        if (array_key_exists($type, $this->attributes) === false) {
-            return null;
+        if (array_key_exists($attribute, $this->attributes) === false) {
+            die('not found');
         }
 
-        if (count($this->attributes[$type]) === 1) {
-            return $this->attributes[$type][0];
-        }
-
-        die('more than one :('); // @todo: concat? return first?
+        return $this->attributes[$attribute];
     }
 
     /**
-     * @return array<int, array<int, mixed>>
+     * @param string $attribute
+     *
+     * @return string
+     */
+    public function getAttributeString($attribute)
+    {
+        if (array_key_exists($attribute, $this->attributes) === false) {
+            die('not found');
+        }
+
+        return implode(', ', $this->attributes[$attribute]);
+    }
+
+    /**
+     * @return array<string, mixed[]>
      */
     public function getAttributes()
     {
@@ -122,5 +135,23 @@ final class Packet
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @param string $attribute
+     *
+     * @return mixed
+     */
+    public function getUniqueAttribute($attribute)
+    {
+        if (array_key_exists($attribute, $this->attributes) === false) {
+            die('not found');
+        }
+
+        if (count($this->attributes[$attribute]) > 1) {
+            die('too many');
+        }
+
+        return $this->attributes[$attribute][0];
     }
 }

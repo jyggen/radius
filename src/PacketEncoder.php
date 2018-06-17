@@ -115,14 +115,14 @@ final class PacketEncoder
                     $authenticator = $packet->getAuthenticator();
                 }
 
-                $message = $this->encodeMessage($packet, $length, $authenticator, $attributes);
+                $message = $this->encodePacket($packet, $length, $authenticator, $attributes);
                 $authenticator = md5($message.$packet->getSecret(), true);
                 break;
             default:
                 die('unknown packet code');
         }
 
-        return $this->encodeMessage($packet, $length, $authenticator, $attributes);
+        return $this->encodePacket($packet, $length, $authenticator, $attributes);
     }
 
     /**
@@ -133,7 +133,7 @@ final class PacketEncoder
      *
      * @return string
      */
-    private function encodeMessage(Packet $packet, $length, $authenticator, $attributes)
+    private function encodePacket(Packet $packet, $length, $authenticator, $attributes)
     {
         return pack(
             self::ENCODE_FORMAT,

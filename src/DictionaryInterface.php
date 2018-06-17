@@ -14,12 +14,12 @@ namespace Boo\Radius;
 interface DictionaryInterface
 {
     /**
-     * @return array<int, array>
+     * @return array[]
      */
     public function getAttributes();
 
     /**
-     * @return array<int, array<int, array>>
+     * @return array[]
      */
-    public function getVendorAttributes();
+    public function getVendors();
 }
