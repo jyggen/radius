@@ -29,8 +29,8 @@ use Boo\Radius\PacketType;
 
 $client = new Client('udp://127.0.0.1:1812', 2);
 $response = $client->send(new Packet(PacketType::ACCESS_REQUEST(), 'xyzzy5461', [
-    Rfc2865::ATTRIBUTE_USER_NAME => 'nemo',
-    Rfc2865::ATTRIBUTE_USER_PASSWORD => 'arctangent',
+    'User-Name' => 'nemo',
+    'User-Password' => 'arctangent',
 ]));
 
 if ($response->getType() !== PacketType::ACCESS_ACCEPT()) {
