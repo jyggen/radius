@@ -1,4 +1,4 @@
-# Radius (PHP implementation)
+# RADIUS Client (PHP implementation)
 
 [![Source Code][badge-source]][source]
 [![Latest Version][badge-release]][release]
@@ -33,7 +33,7 @@ $response = $client->send(new Packet(PacketType::ACCESS_REQUEST(), 'xyzzy5461', 
 ]));
 
 if ($response->getType() !== PacketType::ACCESS_ACCEPT()) {
-    die('Unable to login!');
+    throw new \RuntimeException('Unable to authenticate as user "nemo"');
 }
 ```
 

@@ -12,6 +12,7 @@
 namespace Boo\Radius;
 
 use Boo\Radius\Attributes\AttributeInterface;
+use Boo\Radius\Exceptions\AttributeException;
 use Boo\Radius\Exceptions\InvalidLengthException;
 
 final class AttributeEncoder
@@ -88,7 +89,7 @@ final class AttributeEncoder
             $parts['packet'] = substr($parts['packet'], 0, $length);
 
             if (strlen($parts['packet']) !== $length) {
-                throw new InvalidLengthException('Invalid attribute length');
+                throw new InvalidLengthException('Attribute length does not match actual length');
             }
 
             if ($parts['type'] === self::VENDOR_SPECIFIC_ATTRIBUTE) {
@@ -203,7 +204,7 @@ final class AttributeEncoder
             $parts['packet'] = substr($parts['packet'], 0, $length);
 
             if (strlen($parts['packet']) !== $length) {
-                throw new InvalidLengthException('Invalid vendor attribute length');
+                throw new InvalidLengthException('Attribute length does not match actual length');
             }
 
             $attribute = $this->getVendorAttributeFromType($parts['vendor'], $parts['type']);
@@ -253,12 +254,14 @@ final class AttributeEncoder
     /**
      * @param string $name
      *
+     * @throws AttributeException
+     *
      * @return array<string, mixed>
      */
     private function getAttributeFromName($name)
     {
         if (array_key_exists($name, $this->attributeNameLookup) === false) {
-            die('unknown attribute "'.$name.'"');
+            throw new AttributeException('Attribute with name "'.$name.'" not found within the loaded dictionaries');
         }
 
         return $this->attributeNameLookup[$name];
@@ -267,12 +270,14 @@ final class AttributeEncoder
     /**
      * @param int $type
      *
+     * @throws AttributeException
+     *
      * @return array<string, mixed>
      */
     private function getAttributeFromType($type)
     {
         if (array_key_exists($type, $this->attributeTypeLookup) === false) {
-            die('unknown attribute "'.$type.'"');
+            throw new AttributeException('Attribute with code "'.$type.'" not found within the loaded dictionaries');
         }
 
         return $this->attributeTypeLookup[$type];
@@ -282,16 +287,18 @@ final class AttributeEncoder
      * @param int $vendor
      * @param int $type
      *
+     * @throws AttributeException
+     *
      * @return array<string, mixed>
      */
     private function getVendorAttributeFromType($vendor, $type)
     {
         if (array_key_exists($vendor, $this->vendorTypeLookup) === false) {
-            die('unknown vendor "'.$vendor.'"');
+            throw new AttributeException('Vendor with code "'.$type.'" not found within the loaded dictionaries');
         }
 
         if (array_key_exists($type, $this->vendorTypeLookup[$vendor]) === false) {
-            die('unknown type "'.$type.'" for vendor "'.$this->vendors[$vendor]['name'].'"');
+            throw new AttributeException('Attribute with type "'.$type.'" for vendor "'.$this->vendors[$vendor]['name'].'" not found within the loaded dictionaries');
         }
 
         return $this->vendorTypeLookup[$vendor][$type];

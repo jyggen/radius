@@ -11,7 +11,8 @@
 
 namespace Boo\Radius;
 
-use Boo\Radius\Exceptions\AttributeException;
+use Boo\Radius\Exceptions\InvalidCodeException;
+use Boo\Radius\Exceptions\InvalidLengthException;
 
 final class PacketEncoder
 {
@@ -37,31 +38,35 @@ final class PacketEncoder
      * @param string $message
      * @param string $secret
      *
-     * @throws AttributeException
+     * @throws InvalidCodeException
+     * @throws InvalidLengthException
      *
      * @return Packet
      */
     public function decode($message, $secret)
     {
         if (strlen($message) < 20) {
-            // @todo: throw exception
-            die('packet not at least 20 bytes long');
+            throw new InvalidLengthException('Packet must be at least 20 bytes');
         }
 
         $parts = unpack(self::DECODE_FORMAT, $message);
 
-        if ($parts['length'] < 20 ||
-            $parts['length'] > self::MAX_PACKET_LENGTH ||
-            strlen($message) !== $parts['length']) {
-            // @todo: throw exception
-            die('invalid packet length');
+        if ($parts['length'] < 20) {
+            throw new InvalidLengthException('Packet must be at least 20 bytes');
+        }
+
+        if ($parts['length'] > self::MAX_PACKET_LENGTH) {
+            throw new InvalidLengthException('Packet must not be longer than '.self::MAX_PACKET_LENGTH.' bytes');
+        }
+
+        if (strlen($message) !== $parts['length']) {
+            throw new InvalidLengthException('Packet length does not match actual length');
         }
 
         try {
             $code = PacketType::byValue($parts['code']);
         } catch (\Exception $e) {
-            // @todo: throw exception
-            die('code');
+            throw new InvalidCodeException('Packet of type "'.$parts['code'].'" is not yet supported');
         }
 
         $packet = new Packet(
@@ -78,6 +83,9 @@ final class PacketEncoder
     /**
      * @param Packet $packet
      *
+     * @throws InvalidCodeException
+     * @throws InvalidLengthException
+     *
      * @return string
      */
     public function encode(Packet $packet)
@@ -86,7 +94,7 @@ final class PacketEncoder
         $length = 20 + strlen($attributes);
 
         if ($length > self::MAX_PACKET_LENGTH) {
-            die('encoded packet is too long');
+            throw new InvalidLengthException('Packet must not be longer than '.self::MAX_PACKET_LENGTH.' bytes');
         }
 
         $authenticator = str_repeat("\x00", 16);
@@ -119,7 +127,7 @@ final class PacketEncoder
                 $authenticator = md5($message.$packet->getSecret(), true);
                 break;
             default:
-                die('unknown packet code');
+                throw new InvalidCodeException('Packet of type "'.$packetCode.'" is not yet supported');
         }
 
         return $this->encodePacket($packet, $length, $authenticator, $attributes);

@@ -11,6 +11,8 @@
 
 namespace Boo\Radius\Attributes;
 
+use Boo\Radius\Exceptions\InvalidArgumentException;
+
 interface AttributeInterface
 {
     /**
@@ -18,6 +20,8 @@ interface AttributeInterface
      * @param string     $authenticator
      * @param string     $secret
      * @param null|array $options
+     *
+     * @throws InvalidArgumentException
      *
      * @return mixed
      */
@@ -28,6 +32,8 @@ interface AttributeInterface
      * @param string     $authenticator
      * @param string     $secret
      * @param null|array $options
+     *
+     * @throws InvalidArgumentException
      *
      * @return string
      */

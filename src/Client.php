@@ -56,8 +56,9 @@ final class Client
     /**
      * @param Packet $packet
      *
-     * @throws Exceptions\AttributeException
      * @throws Exceptions\ClientException
+     * @throws Exceptions\InvalidCodeException
+     * @throws Exceptions\InvalidLengthException
      *
      * @return Packet
      */
@@ -74,7 +75,7 @@ final class Client
         $response = $this->socket->read(PacketEncoder::MAX_PACKET_LENGTH);
 
         if (is_authentic_response($request, $response, $packet->getSecret()) === false) {
-            die('unauthentic response');
+            throw new ClientException('The received response is not authentic and has likely been tampered with');
         }
 
         return $this->encoder->decode($response, $packet->getSecret());

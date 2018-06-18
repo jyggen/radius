@@ -11,6 +11,8 @@
 
 namespace Boo\Radius;
 
+use Boo\Radius\Exceptions\AttributeException;
+
 final class Packet
 {
     /**
@@ -72,12 +74,14 @@ final class Packet
     /**
      * @param string $attribute
      *
+     * @throws AttributeException
+     *
      * @return array
      */
     public function getAttribute($attribute)
     {
         if (array_key_exists($attribute, $this->attributes) === false) {
-            die('not found');
+            throw new AttributeException('Attribute "'.$attribute.'" not found in packet');
         }
 
         return $this->attributes[$attribute];
@@ -86,12 +90,14 @@ final class Packet
     /**
      * @param string $attribute
      *
+     * @throws AttributeException
+     *
      * @return string
      */
     public function getAttributeString($attribute)
     {
         if (array_key_exists($attribute, $this->attributes) === false) {
-            die('not found');
+            throw new AttributeException('Attribute "'.$attribute.'" not found in packet');
         }
 
         return implode(', ', $this->attributes[$attribute]);
@@ -140,16 +146,18 @@ final class Packet
     /**
      * @param string $attribute
      *
+     * @throws AttributeException
+     *
      * @return mixed
      */
     public function getUniqueAttribute($attribute)
     {
         if (array_key_exists($attribute, $this->attributes) === false) {
-            die('not found');
+            throw new AttributeException('Attribute "'.$attribute.'" not found in packet');
         }
 
         if (count($this->attributes[$attribute]) > 1) {
-            die('too many');
+            throw new AttributeException('Multiple values for attribute "'.$attribute.'" found in packet');
         }
 
         return $this->attributes[$attribute][0];

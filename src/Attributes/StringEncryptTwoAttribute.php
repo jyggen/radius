@@ -11,6 +11,8 @@
 
 namespace Boo\Radius\Attributes;
 
+use Boo\Radius\Exceptions\InvalidArgumentException;
+
 final class StringEncryptTwoAttribute implements AttributeInterface
 {
     /**
@@ -25,15 +27,15 @@ final class StringEncryptTwoAttribute implements AttributeInterface
         $valueLength = strlen($value);
 
         if ($valueLength < 16 || $valueLength > 128) {
-            die('invalid length');
+            throw new InvalidArgumentException('The value must be between 16 and 128 characters');
         }
 
         if ($secret === '') {
-            die('invalid secret');
+            throw new InvalidArgumentException('The secret cannot be empty');
         }
 
         if ($authenticator === '') {
-            die('invalid authenticator');
+            throw new InvalidArgumentException('The authenticator cannot be empty');
         }
 
         $password = md5($secret.$authenticator.$salt, true);
@@ -76,15 +78,15 @@ final class StringEncryptTwoAttribute implements AttributeInterface
         $passwordLength = strlen($password);
 
         if ($passwordLength > 128) {
-            die('invalid length');
+            throw new InvalidArgumentException('The value must be less than 128 characters');
         }
 
         if ($secret === '') {
-            die('invalid secret');
+            throw new InvalidArgumentException('The secret cannot be empty');
         }
 
         if (strlen($authenticator) !== 16) {
-            die('invalid authenticator');
+            throw new InvalidArgumentException('The authenticator cannot be empty');
         }
 
         $value = md5($secret.$authenticator.$salt, true);

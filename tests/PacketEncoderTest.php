@@ -22,6 +22,9 @@ use PHPUnit\Framework\TestCase;
 
 final class PacketEncoderTest extends TestCase
 {
+    /**
+     * @throws RadiusException
+     */
     public function testCoaRequestWithVendorAttribute()
     {
         $secret = 'mikrotik123';
@@ -30,6 +33,17 @@ final class PacketEncoderTest extends TestCase
         $encoder = new PacketEncoder($attributeEncoder);
 
         $attributeEncoder->registerDictionary(new Dictionary\MikroTik());
+
+        $packet = $encoder->decode($request, $secret);
+
+        $this->assertSame(PacketType::COA_REQUEST(), $packet->getType());
+        $this->assertSame(115, $packet->getIdentifier());
+        $this->assertCount(4, $packet->getAttributes());
+        $this->assertSame('0130a0c5ed5e40608b65ddd9b48eaaf2', $packet->getUniqueAttribute('User-Name'));
+        $this->assertSame('192.168.52.253', $packet->getUniqueAttribute('Framed-IP-Address'));
+        $this->assertSame(3000, $packet->getUniqueAttribute('Session-Timeout'));
+        $this->assertSame(50000000, $packet->getUniqueAttribute('Mikrotik-Total-Limit'));
+        $this->assertSame($request, $encoder->encode($packet));
 
         $packet = new Packet(PacketType::COA_REQUEST(), $secret, [
             'User-Name' => '0130a0c5ed5e40608b65ddd9b48eaaf2',
