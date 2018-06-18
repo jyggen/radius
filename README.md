@@ -7,7 +7,7 @@
 [![Coverage Status][badge-coverage]][coverage]
 [![Total Downloads][badge-downloads]][downloads]
 
-boo/radius is a PHP 5.5+ RADIUS client and server implementation.
+boo/radius is a PHP 5.5+ RADIUS client implementation.
 
 ## Installation
 

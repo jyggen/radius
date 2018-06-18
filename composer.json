@@ -1,7 +1,7 @@
 {
     "name": "boo/radius",
     "type": "library",
-    "description": "A PHP RADIUS client and server implementation",
+    "description": "A PHP RADIUS client implementation",
     "keywords": [
         "RADIUS"
     ],
