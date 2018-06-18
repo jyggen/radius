@@ -13,12 +13,14 @@ namespace Boo\Radius\Attributes;
 
 final class IpAddressAttribute implements AttributeInterface
 {
+    const OPTION_MODE = 0;
+
     /**
      * {@inheritdoc}
      *
      * @return string
      */
-    public static function decode($message, $authenticator, $secret)
+    public static function decode($message, $authenticator, $secret, array $options = null)
     {
         return inet_ntop($message);
     }
@@ -28,7 +30,7 @@ final class IpAddressAttribute implements AttributeInterface
      *
      * @param string $value
      */
-    public static function encode($value, $authenticator, $secret)
+    public static function encode($value, $authenticator, $secret, array $options = null)
     {
         return inet_pton($value);
     }

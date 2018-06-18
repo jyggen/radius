@@ -23,7 +23,6 @@ composer require boo/radius
 <?php
 
 use Boo\Radius\Client;
-use Boo\Radius\Dictionary\Rfc2865;
 use Boo\Radius\Packet;
 use Boo\Radius\PacketType;
 

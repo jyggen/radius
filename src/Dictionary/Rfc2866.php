@@ -51,84 +51,132 @@ final class Rfc2866 implements DictionaryInterface
      */
     private static $attributes = [
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Acct-Status-Type',
             'type' => 40,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Acct-Delay-Time',
             'type' => 41,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Acct-Input-Octets',
             'type' => 42,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Acct-Output-Octets',
             'type' => 43,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Acct-Session-Id',
             'type' => 44,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Acct-Authentic',
             'type' => 45,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Acct-Session-Time',
             'type' => 46,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Acct-Input-Packets',
             'type' => 47,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Acct-Output-Packets',
             'type' => 48,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Acct-Terminate-Cause',
             'type' => 49,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Acct-Multi-Session-Id',
             'type' => 50,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Acct-Link-Count',
             'type' => 51,

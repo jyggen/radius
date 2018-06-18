@@ -14,20 +14,22 @@ namespace Boo\Radius\Attributes;
 interface AttributeInterface
 {
     /**
-     * @param string $message
-     * @param string $authenticator
-     * @param string $secret
+     * @param string     $message
+     * @param string     $authenticator
+     * @param string     $secret
+     * @param null|array $options
      *
      * @return mixed
      */
-    public static function decode($message, $authenticator, $secret);
+    public static function decode($message, $authenticator, $secret, array $options = null);
 
     /**
-     * @param mixed  $value
-     * @param string $authenticator
-     * @param string $secret
+     * @param mixed      $value
+     * @param string     $authenticator
+     * @param string     $secret
+     * @param null|array $options
      *
      * @return string
      */
-    public static function encode($value, $authenticator, $secret);
+    public static function encode($value, $authenticator, $secret, array $options = null);
 }

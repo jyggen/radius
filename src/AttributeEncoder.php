@@ -11,6 +11,7 @@
 
 namespace Boo\Radius;
 
+use Boo\Radius\Attributes\AttributeInterface;
 use Boo\Radius\Exceptions\InvalidLengthException;
 
 final class AttributeEncoder
@@ -53,6 +54,17 @@ final class AttributeEncoder
         $this->registerDictionary(new Dictionary\Rfc2867());
         $this->registerDictionary(new Dictionary\Rfc2868());
         $this->registerDictionary(new Dictionary\Rfc2869());
+        $this->registerDictionary(new Dictionary\Rfc3162());
+        $this->registerDictionary(new Dictionary\Rfc3576());
+        $this->registerDictionary(new Dictionary\Rfc3580());
+        $this->registerDictionary(new Dictionary\Rfc4072());
+        $this->registerDictionary(new Dictionary\Rfc4372());
+        $this->registerDictionary(new Dictionary\Rfc4603());
+        $this->registerDictionary(new Dictionary\Rfc4675());
+        $this->registerDictionary(new Dictionary\Rfc4679());
+        $this->registerDictionary(new Dictionary\Rfc4818());
+        $this->registerDictionary(new Dictionary\Rfc4849());
+        $this->registerDictionary(new Dictionary\Rfc5090());
         $this->registerDictionary(new Dictionary\Rfc5176());
     }
 
@@ -88,10 +100,13 @@ final class AttributeEncoder
             }
 
             $attribute = $this->getAttributeFromType($parts['type']);
-            $decoded = $attribute['encoder']::decode(
+            /** @var AttributeInterface $encoder */
+            $encoder = $attribute['encoder']['class'];
+            $decoded = $encoder::decode(
                 $parts['packet'],
                 $authenticator,
-                $secret
+                $secret,
+                $attribute['encoder']['options']
             );
 
             if (array_key_exists($attribute['name'], $attributes) === false) {
@@ -124,7 +139,9 @@ final class AttributeEncoder
             }
 
             foreach ($values as $value) {
-                $encoded = $attribute['encoder']::encode($value, $authenticator, $secret);
+                /** @var AttributeInterface $encoder */
+                $encoder = $attribute['encoder']['class'];
+                $encoded = $encoder::encode($value, $authenticator, $secret, $attribute['encoder']['options']);
                 $length = strlen($encoded) + 2;
                 $message .= pack(self::ENCODE_FORMAT, $attribute['type'], $length, $encoded);
             }
@@ -190,11 +207,9 @@ final class AttributeEncoder
             }
 
             $attribute = $this->getVendorAttributeFromType($parts['vendor'], $parts['type']);
-            $decoded = $attribute['encoder']::decode(
-                $parts['packet'],
-                $authenticator,
-                $secret
-            );
+            /** @var AttributeInterface $encoder */
+            $encoder = $attribute['encoder']['class'];
+            $decoded = $encoder::decode($parts['packet'], $authenticator, $secret, $attribute['encoder']['options']);
 
             if (array_key_exists($attribute['name'], $attributes) === false) {
                 $attributes[$attribute['name']] = [];
@@ -219,7 +234,9 @@ final class AttributeEncoder
         $secret = $packet->getSecret();
 
         foreach ($values as $key => $value) {
-            $encoded = $attribute['encoder']::encode($value, $authenticator, $secret);
+            /** @var AttributeInterface $encoder */
+            $encoder = $attribute['encoder']['class'];
+            $encoded = $encoder::encode($value, $authenticator, $secret, $attribute['encoder']['options']);
             $length = strlen($encoded) + 2;
             $values[$key] = pack(
                 self::ENCODE_VENDOR_FORMAT,

@@ -14,15 +14,8 @@ namespace Boo\Radius\Dictionary;
 use Boo\Radius\Attributes;
 use Boo\Radius\DictionaryInterface;
 
-final class Rfc2867 implements DictionaryInterface
+final class Rfc4849 implements DictionaryInterface
 {
-    const ACCT_STATUS_TYPE_TUNNEL_START = 9;
-    const ACCT_STATUS_TYPE_TUNNEL_STOP = 10;
-    const ACCT_STATUS_TYPE_TUNNEL_REJECT = 11;
-    const ACCT_STATUS_TYPE_TUNNEL_LINK_START = 12;
-    const ACCT_STATUS_TYPE_TUNNEL_LINK_STOP = 13;
-    const ACCT_STATUS_TYPE_TUNNEL_LINK_REJECT = 14;
-
     /**
      * @var array[]
      */
@@ -34,19 +27,8 @@ final class Rfc2867 implements DictionaryInterface
                 ],
             ],
             'has_tag' => false,
-            'name' => 'Acct-Tunnel-Connection',
-            'type' => 68,
-            'vendor' => null,
-        ],
-        [
-            'encoder' => [
-                'class' => Attributes\IntegerAttribute::class,
-                'options' => [
-                ],
-            ],
-            'has_tag' => false,
-            'name' => 'Acct-Tunnel-Packets-Lost',
-            'type' => 86,
+            'name' => 'NAS-Filter-Rule',
+            'type' => 92,
             'vendor' => null,
         ],
     ];

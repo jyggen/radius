@@ -50,70 +50,110 @@ final class Rfc2868 implements DictionaryInterface
      */
     private static $attributes = [
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => true,
             'name' => 'Tunnel-Type',
             'type' => 64,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => true,
             'name' => 'Tunnel-Medium-Type',
             'type' => 65,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => true,
             'name' => 'Tunnel-Client-Endpoint',
             'type' => 66,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => true,
             'name' => 'Tunnel-Server-Endpoint',
             'type' => 67,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringEncryptTwoAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringEncryptTwoAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => true,
             'name' => 'Tunnel-Password',
             'type' => 69,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => true,
             'name' => 'Tunnel-Private-Group-Id',
             'type' => 81,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => true,
             'name' => 'Tunnel-Assignment-Id',
             'type' => 82,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => true,
             'name' => 'Tunnel-Preference',
             'type' => 83,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => true,
             'name' => 'Tunnel-Client-Auth-Id',
             'type' => 90,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => true,
             'name' => 'Tunnel-Server-Auth-Id',
             'type' => 91,

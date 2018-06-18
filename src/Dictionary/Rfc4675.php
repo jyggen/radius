@@ -14,14 +14,10 @@ namespace Boo\Radius\Dictionary;
 use Boo\Radius\Attributes;
 use Boo\Radius\DictionaryInterface;
 
-final class Rfc2867 implements DictionaryInterface
+final class Rfc4675 implements DictionaryInterface
 {
-    const ACCT_STATUS_TYPE_TUNNEL_START = 9;
-    const ACCT_STATUS_TYPE_TUNNEL_STOP = 10;
-    const ACCT_STATUS_TYPE_TUNNEL_REJECT = 11;
-    const ACCT_STATUS_TYPE_TUNNEL_LINK_START = 12;
-    const ACCT_STATUS_TYPE_TUNNEL_LINK_STOP = 13;
-    const ACCT_STATUS_TYPE_TUNNEL_LINK_REJECT = 14;
+    const INGRESS_FILTERS_ENABLED = 1;
+    const INGRESS_FILTERS_DISABLED = 2;
 
     /**
      * @var array[]
@@ -29,13 +25,13 @@ final class Rfc2867 implements DictionaryInterface
     private static $attributes = [
         [
             'encoder' => [
-                'class' => Attributes\StringAttribute::class,
+                'class' => Attributes\IntegerAttribute::class,
                 'options' => [
                 ],
             ],
             'has_tag' => false,
-            'name' => 'Acct-Tunnel-Connection',
-            'type' => 68,
+            'name' => 'Egress-VLANID',
+            'type' => 56,
             'vendor' => null,
         ],
         [
@@ -45,8 +41,30 @@ final class Rfc2867 implements DictionaryInterface
                 ],
             ],
             'has_tag' => false,
-            'name' => 'Acct-Tunnel-Packets-Lost',
-            'type' => 86,
+            'name' => 'Ingress-Filters',
+            'type' => 57,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Egress-VLAN-Name',
+            'type' => 58,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\OctetsAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'User-Priority-Table',
+            'type' => 59,
             'vendor' => null,
         ],
     ];

@@ -25,9 +25,9 @@ $resolver = function ($type, array $options = []) {
     if (array_key_exists('encrypt', $options)) {
         switch ((int) $options['encrypt']) {
             case 1:
-                return Attributes\StringEncryptOneAttribute::class;
+                return [Attributes\StringEncryptOneAttribute::class];
             case 2:
-                return Attributes\StringEncryptTwoAttribute::class;
+                return [Attributes\StringEncryptTwoAttribute::class];
             default:
                 throw new \RuntimeException('Unknown encrypt mode "'.$options['encrypt'].'"');
         }
@@ -35,22 +35,31 @@ $resolver = function ($type, array $options = []) {
 
     switch ($type) {
         case 'date':
-            return Attributes\DateAttribute::class;
+            return [Attributes\DateAttribute::class];
+        case 'ifid':
+            return [Attributes\OctetsAttribute::class]; // @todo should be something else
         case 'integer':
-            return Attributes\IntegerAttribute::class;
+            return [Attributes\IntegerAttribute::class];
         case 'ipaddr':
-            return Attributes\IpAddressAttribute::class;
+            return [Attributes\IpAddressAttribute::class, [Attributes\IpAddressAttribute::OPTION_MODE => FILTER_FLAG_IPV4]];
+        case 'ipv6addr':
+            return [Attributes\IpAddressAttribute::class, [Attributes\IpAddressAttribute::OPTION_MODE => FILTER_FLAG_IPV6]];
+        case 'ipv6prefix':
+            return [Attributes\OctetsAttribute::class]; // @todo should be something else
         case 'octets':
+            return [Attributes\OctetsAttribute::class];
         case 'octets[8]':
+            return [Attributes\OctetsAttribute::class, [Attributes\OctetsAttribute::OPTION_SIZE => 8]];
         case 'octets[14]':
+            return [Attributes\OctetsAttribute::class, [Attributes\OctetsAttribute::OPTION_SIZE => 14]];
         case 'octets[16]':
-            return Attributes\OctetsAttribute::class;
+            return [Attributes\OctetsAttribute::class, [Attributes\OctetsAttribute::OPTION_SIZE => 16]];
         case 'string':
-            return Attributes\StringAttribute::class;
-        case 'string encrypt=1':
-            return Attributes\StringEncryptOneAttribute::class;
+            return [Attributes\StringAttribute::class];
+        case 'tlv':
+            return [Attributes\OctetsAttribute::class]; // @todo should be something else
         case 'vsa':
-            return Attributes\StringAttribute::class;
+            return [Attributes\StringAttribute::class];
         default:
             throw new \RuntimeException('Unknown type "'.$type.'"');
     }
@@ -76,10 +85,8 @@ $command->setCode(function (InputInterface $input, OutputInterface $output) use 
         }
 
         $commentPos = strpos($line, '#');
-        $comment = null;
 
         if ($commentPos !== false) {
-            $comment = trim(substr($line, $commentPos + 1));
             $line = substr($line, 0, $commentPos);
             $line = rtrim($line);
         }
@@ -106,9 +113,13 @@ $command->setCode(function (InputInterface $input, OutputInterface $output) use 
                     }, []);
                 }
 
+                $encoder = $resolver($parts[3], $options);
                 $attributes[] = [
-                    'encoder' => (new \ReflectionClass($resolver($parts[3], $options)))->getShortName(),
-                    'has_tag' => array_key_exists('has_tag', $options) ? 'true' : 'false',
+                    'encoder' => [
+                        'class' => (new \ReflectionClass($encoder[0]))->getShortName(),
+                        'options' => array_key_exists(1, $encoder) ? $encoder[1] : [],
+                    ],
+                    'has_tag' => array_key_exists('has_tag', $options),
                     'name' => $parts[1],
                     'type' => (int) $parts[2],
                     'vendor' => $vendorContext,

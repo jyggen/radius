@@ -18,7 +18,7 @@ final class DateAttribute implements AttributeInterface
      *
      * @return \DateTimeImmutable
      */
-    public static function decode($message, $authenticator, $secret)
+    public static function decode($message, $authenticator, $secret, array $options = null)
     {
         $timestamp = array_sum(unpack('N', $message));
 
@@ -30,7 +30,7 @@ final class DateAttribute implements AttributeInterface
      *
      * @param \DateTimeImmutable $value
      */
-    public static function encode($value, $authenticator, $secret)
+    public static function encode($value, $authenticator, $secret, array $options = null)
     {
         return pack('N', $value->getTimestamp());
     }

@@ -14,95 +14,21 @@ namespace Boo\Radius\Dictionary;
 use Boo\Radius\Attributes;
 use Boo\Radius\DictionaryInterface;
 
-final class Rfc2869 implements DictionaryInterface
+final class Rfc5090 implements DictionaryInterface
 {
-    const ARAP_ZONE_ACCESS_DEFAULT_ZONE = 1;
-    const ARAP_ZONE_ACCESS_ZONE_FILTER_INCLUSIVE = 2;
-    const ARAP_ZONE_ACCESS_ZONE_FILTER_EXCLUSIVE = 4;
-    const PROMPT_NO_ECHO = 0;
-    const PROMPT_ECHO = 1;
-
     /**
      * @var array[]
      */
     private static $attributes = [
         [
             'encoder' => [
-                'class' => Attributes\IntegerAttribute::class,
+                'class' => Attributes\StringAttribute::class,
                 'options' => [
                 ],
             ],
             'has_tag' => false,
-            'name' => 'Acct-Input-Gigawords',
-            'type' => 52,
-            'vendor' => null,
-        ],
-        [
-            'encoder' => [
-                'class' => Attributes\IntegerAttribute::class,
-                'options' => [
-                ],
-            ],
-            'has_tag' => false,
-            'name' => 'Acct-Output-Gigawords',
-            'type' => 53,
-            'vendor' => null,
-        ],
-        [
-            'encoder' => [
-                'class' => Attributes\DateAttribute::class,
-                'options' => [
-                ],
-            ],
-            'has_tag' => false,
-            'name' => 'Event-Timestamp',
-            'type' => 55,
-            'vendor' => null,
-        ],
-        [
-            'encoder' => [
-                'class' => Attributes\OctetsAttribute::class,
-                'options' => [
-                    0 => 16,
-                ],
-            ],
-            'has_tag' => false,
-            'name' => 'ARAP-Password',
-            'type' => 70,
-            'vendor' => null,
-        ],
-        [
-            'encoder' => [
-                'class' => Attributes\OctetsAttribute::class,
-                'options' => [
-                    0 => 14,
-                ],
-            ],
-            'has_tag' => false,
-            'name' => 'ARAP-Features',
-            'type' => 71,
-            'vendor' => null,
-        ],
-        [
-            'encoder' => [
-                'class' => Attributes\IntegerAttribute::class,
-                'options' => [
-                ],
-            ],
-            'has_tag' => false,
-            'name' => 'ARAP-Zone-Access',
-            'type' => 72,
-            'vendor' => null,
-        ],
-        [
-            'encoder' => [
-                'class' => Attributes\IntegerAttribute::class,
-                'options' => [
-                ],
-            ],
-            'has_tag' => false,
-            'name' => 'ARAP-Security',
-            'type' => 73,
+            'name' => 'Digest-Response',
+            'type' => 103,
             'vendor' => null,
         ],
         [
@@ -112,30 +38,8 @@ final class Rfc2869 implements DictionaryInterface
                 ],
             ],
             'has_tag' => false,
-            'name' => 'ARAP-Security-Data',
-            'type' => 74,
-            'vendor' => null,
-        ],
-        [
-            'encoder' => [
-                'class' => Attributes\IntegerAttribute::class,
-                'options' => [
-                ],
-            ],
-            'has_tag' => false,
-            'name' => 'Password-Retry',
-            'type' => 75,
-            'vendor' => null,
-        ],
-        [
-            'encoder' => [
-                'class' => Attributes\IntegerAttribute::class,
-                'options' => [
-                ],
-            ],
-            'has_tag' => false,
-            'name' => 'Prompt',
-            'type' => 76,
+            'name' => 'Digest-Realm',
+            'type' => 104,
             'vendor' => null,
         ],
         [
@@ -145,8 +49,8 @@ final class Rfc2869 implements DictionaryInterface
                 ],
             ],
             'has_tag' => false,
-            'name' => 'Connect-Info',
-            'type' => 77,
+            'name' => 'Digest-Nonce',
+            'type' => 105,
             'vendor' => null,
         ],
         [
@@ -156,53 +60,8 @@ final class Rfc2869 implements DictionaryInterface
                 ],
             ],
             'has_tag' => false,
-            'name' => 'Configuration-Token',
-            'type' => 78,
-            'vendor' => null,
-        ],
-        [
-            'encoder' => [
-                'class' => Attributes\OctetsAttribute::class,
-                'options' => [
-                ],
-            ],
-            'has_tag' => false,
-            'name' => 'EAP-Message',
-            'type' => 79,
-            'vendor' => null,
-        ],
-        [
-            'encoder' => [
-                'class' => Attributes\OctetsAttribute::class,
-                'options' => [
-                ],
-            ],
-            'has_tag' => false,
-            'name' => 'Message-Authenticator',
-            'type' => 80,
-            'vendor' => null,
-        ],
-        [
-            'encoder' => [
-                'class' => Attributes\OctetsAttribute::class,
-                'options' => [
-                    0 => 8,
-                ],
-            ],
-            'has_tag' => false,
-            'name' => 'ARAP-Challenge-Response',
-            'type' => 84,
-            'vendor' => null,
-        ],
-        [
-            'encoder' => [
-                'class' => Attributes\IntegerAttribute::class,
-                'options' => [
-                ],
-            ],
-            'has_tag' => false,
-            'name' => 'Acct-Interim-Interval',
-            'type' => 85,
+            'name' => 'Digest-Response-Auth',
+            'type' => 106,
             'vendor' => null,
         ],
         [
@@ -212,8 +71,8 @@ final class Rfc2869 implements DictionaryInterface
                 ],
             ],
             'has_tag' => false,
-            'name' => 'NAS-Port-Id',
-            'type' => 87,
+            'name' => 'Digest-Nextnonce',
+            'type' => 107,
             'vendor' => null,
         ],
         [
@@ -223,8 +82,162 @@ final class Rfc2869 implements DictionaryInterface
                 ],
             ],
             'has_tag' => false,
-            'name' => 'Framed-Pool',
-            'type' => 88,
+            'name' => 'Digest-Method',
+            'type' => 108,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Digest-URI',
+            'type' => 109,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Digest-Qop',
+            'type' => 110,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Digest-Algorithm',
+            'type' => 111,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Digest-Entity-Body-Hash',
+            'type' => 112,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Digest-CNonce',
+            'type' => 113,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Digest-Nonce-Count',
+            'type' => 114,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Digest-Username',
+            'type' => 115,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Digest-Opaque',
+            'type' => 116,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Digest-Auth-Param',
+            'type' => 117,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Digest-AKA-Auts',
+            'type' => 118,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Digest-Domain',
+            'type' => 119,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Digest-Stale',
+            'type' => 120,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'Digest-HA1',
+            'type' => 121,
+            'vendor' => null,
+        ],
+        [
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
+            'has_tag' => false,
+            'name' => 'SIP-AOR',
+            'type' => 122,
             'vendor' => null,
         ],
     ];

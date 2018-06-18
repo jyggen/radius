@@ -80,287 +80,456 @@ final class Rfc2865 implements DictionaryInterface
      */
     private static $attributes = [
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'User-Name',
             'type' => 1,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringEncryptOneAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringEncryptOneAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'User-Password',
             'type' => 2,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\OctetsAttribute::class,
+            'encoder' => [
+                'class' => Attributes\OctetsAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'CHAP-Password',
             'type' => 3,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IpAddressAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IpAddressAttribute::class,
+                'options' => [
+                    0 => 1048576,
+                ],
+            ],
             'has_tag' => false,
             'name' => 'NAS-IP-Address',
             'type' => 4,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'NAS-Port',
             'type' => 5,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Service-Type',
             'type' => 6,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Framed-Protocol',
             'type' => 7,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IpAddressAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IpAddressAttribute::class,
+                'options' => [
+                    0 => 1048576,
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Framed-IP-Address',
             'type' => 8,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IpAddressAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IpAddressAttribute::class,
+                'options' => [
+                    0 => 1048576,
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Framed-IP-Netmask',
             'type' => 9,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Framed-Routing',
             'type' => 10,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Filter-Id',
             'type' => 11,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Framed-MTU',
             'type' => 12,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Framed-Compression',
             'type' => 13,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IpAddressAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IpAddressAttribute::class,
+                'options' => [
+                    0 => 1048576,
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Login-IP-Host',
             'type' => 14,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Login-Service',
             'type' => 15,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Login-TCP-Port',
             'type' => 16,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Reply-Message',
             'type' => 18,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Callback-Number',
             'type' => 19,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Callback-Id',
             'type' => 20,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Framed-Route',
             'type' => 22,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IpAddressAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IpAddressAttribute::class,
+                'options' => [
+                    0 => 1048576,
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Framed-IPX-Network',
             'type' => 23,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\OctetsAttribute::class,
+            'encoder' => [
+                'class' => Attributes\OctetsAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'State',
             'type' => 24,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\OctetsAttribute::class,
+            'encoder' => [
+                'class' => Attributes\OctetsAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Class',
             'type' => 25,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Vendor-Specific',
             'type' => 26,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Session-Timeout',
             'type' => 27,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Idle-Timeout',
             'type' => 28,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Termination-Action',
             'type' => 29,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Called-Station-Id',
             'type' => 30,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Calling-Station-Id',
             'type' => 31,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'NAS-Identifier',
             'type' => 32,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\OctetsAttribute::class,
+            'encoder' => [
+                'class' => Attributes\OctetsAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Proxy-State',
             'type' => 33,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Login-LAT-Service',
             'type' => 34,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Login-LAT-Node',
             'type' => 35,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\OctetsAttribute::class,
+            'encoder' => [
+                'class' => Attributes\OctetsAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Login-LAT-Group',
             'type' => 36,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Framed-AppleTalk-Link',
             'type' => 37,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Framed-AppleTalk-Network',
             'type' => 38,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Framed-AppleTalk-Zone',
             'type' => 39,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\OctetsAttribute::class,
+            'encoder' => [
+                'class' => Attributes\OctetsAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'CHAP-Challenge',
             'type' => 60,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'NAS-Port-Type',
             'type' => 61,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\IntegerAttribute::class,
+            'encoder' => [
+                'class' => Attributes\IntegerAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Port-Limit',
             'type' => 62,
             'vendor' => null,
         ],
         [
-            'encoder' => Attributes\StringAttribute::class,
+            'encoder' => [
+                'class' => Attributes\StringAttribute::class,
+                'options' => [
+                ],
+            ],
             'has_tag' => false,
             'name' => 'Login-LAT-Port',
             'type' => 63,

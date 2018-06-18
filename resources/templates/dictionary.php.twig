@@ -30,8 +30,15 @@ final class {{ name }} implements DictionaryInterface
     private static $attributes = [
 {% for attribute in attributes %}
         [
-            'encoder' => Attributes\{{ attribute.encoder }}::class,
-            'has_tag' => {{ attribute.has_tag }},
+            'encoder' => [
+                'class' => Attributes\{{ attribute.encoder.class }}::class,
+                'options' => [
+{% for key, value in attribute.encoder.options %}
+                    {{ key }} => {{ value }},
+{% endfor %}
+                ],
+            ],
+            'has_tag' => {{ attribute.has_tag ? "true" : "false" }},
             'name' => '{{ attribute.name }}',
             'type' => {{ attribute.type }},
             'vendor' => {{ attribute.vendor ? "#{attribute.vendor}" : "null" }},
