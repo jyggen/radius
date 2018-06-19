@@ -26,8 +26,8 @@ use Boo\Radius\Client;
 use Boo\Radius\Packet;
 use Boo\Radius\PacketType;
 
-$client = new Client('udp://127.0.0.1:1812', 2);
-$response = $client->send(new Packet(PacketType::ACCESS_REQUEST(), 'xyzzy5461', [
+$client = new Client('udp://127.0.0.1:1812', /* timeout */ 2);
+$response = $client->send(new Packet(PacketType::ACCESS_REQUEST(), /* secret */ 'xyzzy5461', [
     'User-Name' => 'nemo',
     'User-Password' => 'arctangent',
 ]));

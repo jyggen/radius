@@ -16,7 +16,7 @@
         "php": ">=5.5",
         "ext-sockets": "*",
         "clue/socket-raw": "^1.3",
-        "marc-mabe/php-enum": "^2.0",
+        "marc-mabe/php-enum": "^2.3.1",
         "paragonie/random_compat": "^2.0"
     },
     "require-dev": {
