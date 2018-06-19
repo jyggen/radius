@@ -92,11 +92,12 @@ final class AttributeEncoder
                 throw new InvalidLengthException('Attribute length does not match actual length');
             }
 
-            if ($parts['type'] === self::VENDOR_SPECIFIC_ATTRIBUTE) {
+            if (self::VENDOR_SPECIFIC_ATTRIBUTE === $parts['type']) {
                 $attributes = array_merge(
                     $attributes,
                     $this->decodeVendorSpecific($authenticator, $secret, $parts['packet'])
                 );
+
                 continue;
             }
 
@@ -110,7 +111,7 @@ final class AttributeEncoder
                 $attribute['encoder']['options']
             );
 
-            if (array_key_exists($attribute['name'], $attributes) === false) {
+            if (false === array_key_exists($attribute['name'], $attributes)) {
                 $attributes[$attribute['name']] = [];
             }
 
@@ -134,7 +135,7 @@ final class AttributeEncoder
         foreach ($packet->getAttributes() as $name => $values) {
             $attribute = $this->getAttributeFromName($name);
 
-            if ($attribute['vendor'] !== null) {
+            if (null !== $attribute['vendor']) {
                 $values = $this->encodeVendorSpecific($packet, $attribute, $values);
                 $attribute = $this->getAttributeFromType(self::VENDOR_SPECIFIC_ATTRIBUTE);
             }
@@ -171,8 +172,9 @@ final class AttributeEncoder
             $key = key($this->attributes);
             $this->attributeNameLookup[$attribute['name']] = &$this->attributes[$key];
 
-            if ($attribute['vendor'] === null) {
+            if (null === $attribute['vendor']) {
                 $this->attributeTypeLookup[$attribute['type']] = &$this->attributes[$key];
+
                 continue;
             }
 
@@ -212,7 +214,7 @@ final class AttributeEncoder
             $encoder = $attribute['encoder']['class'];
             $decoded = $encoder::decode($parts['packet'], $authenticator, $secret, $attribute['encoder']['options']);
 
-            if (array_key_exists($attribute['name'], $attributes) === false) {
+            if (false === array_key_exists($attribute['name'], $attributes)) {
                 $attributes[$attribute['name']] = [];
             }
 
@@ -260,7 +262,7 @@ final class AttributeEncoder
      */
     private function getAttributeFromName($name)
     {
-        if (array_key_exists($name, $this->attributeNameLookup) === false) {
+        if (false === array_key_exists($name, $this->attributeNameLookup)) {
             throw new AttributeException('Attribute with name "'.$name.'" not found within the loaded dictionaries');
         }
 
@@ -276,7 +278,7 @@ final class AttributeEncoder
      */
     private function getAttributeFromType($type)
     {
-        if (array_key_exists($type, $this->attributeTypeLookup) === false) {
+        if (false === array_key_exists($type, $this->attributeTypeLookup)) {
             throw new AttributeException('Attribute with code "'.$type.'" not found within the loaded dictionaries');
         }
 
@@ -293,11 +295,11 @@ final class AttributeEncoder
      */
     private function getVendorAttributeFromType($vendor, $type)
     {
-        if (array_key_exists($vendor, $this->vendorTypeLookup) === false) {
+        if (false === array_key_exists($vendor, $this->vendorTypeLookup)) {
             throw new AttributeException('Vendor with code "'.$type.'" not found within the loaded dictionaries');
         }
 
-        if (array_key_exists($type, $this->vendorTypeLookup[$vendor]) === false) {
+        if (false === array_key_exists($type, $this->vendorTypeLookup[$vendor])) {
             throw new AttributeException('Attribute with type "'.$type.'" for vendor "'.$this->vendors[$vendor]['name'].'" not found within the loaded dictionaries');
         }
 

@@ -20,7 +20,7 @@ namespace Boo\Radius;
  */
 function is_authentic_response($request, $response, $secret)
 {
-    if ($secret === '' || strlen($response) < 20 || strlen($request) < 20) {
+    if ('' === $secret || strlen($response) < 20 || strlen($request) < 20) {
         return false;
     }
 

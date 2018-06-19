@@ -30,11 +30,11 @@ final class StringEncryptTwoAttribute implements AttributeInterface
             throw new InvalidArgumentException('The value must be between 16 and 128 characters');
         }
 
-        if ($secret === '') {
+        if ('' === $secret) {
             throw new InvalidArgumentException('The secret cannot be empty');
         }
 
-        if ($authenticator === '') {
+        if ('' === $authenticator) {
             throw new InvalidArgumentException('The authenticator cannot be empty');
         }
 
@@ -71,7 +71,7 @@ final class StringEncryptTwoAttribute implements AttributeInterface
         $passwordLength = strlen($password);
         $password = pack('C', $passwordLength).$password;
 
-        while (strlen($password) % 16 !== 0) {
+        while (0 !== strlen($password) % 16) {
             $password .= "\x00";
         }
 
@@ -81,11 +81,11 @@ final class StringEncryptTwoAttribute implements AttributeInterface
             throw new InvalidArgumentException('The value must be less than 128 characters');
         }
 
-        if ($secret === '') {
+        if ('' === $secret) {
             throw new InvalidArgumentException('The secret cannot be empty');
         }
 
-        if (strlen($authenticator) !== 16) {
+        if (16 !== strlen($authenticator)) {
             throw new InvalidArgumentException('The authenticator cannot be empty');
         }
 

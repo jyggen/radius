@@ -280,8 +280,8 @@ final class Rfc4679 implements DictionaryInterface
      */
     private static $vendors = [
         [
-           'identifier' => 3561,
-           'name' => 'ADSL-Forum',
+            'identifier' => 3561,
+            'name' => 'ADSL-Forum',
         ],
     ];
 

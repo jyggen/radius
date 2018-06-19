@@ -20,7 +20,6 @@
         "paragonie/random_compat": "^2.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "~2.2.20",
         "jakub-onderka/php-parallel-lint": "~1.0.0",
         "php-coveralls/php-coveralls": "~2.1.0",
         "phpunit/phpunit": "~4.8.36",

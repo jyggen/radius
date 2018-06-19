@@ -80,18 +80,18 @@ $command->setCode(function (InputInterface $input, OutputInterface $output) use 
     foreach ($lines as $line) {
         $line = trim($line);
 
-        if ($line === '' || strpos($line, '#') === 0) {
+        if ('' === $line || 0 === strpos($line, '#')) {
             continue;
         }
 
         $commentPos = strpos($line, '#');
 
-        if ($commentPos !== false) {
+        if (false !== $commentPos) {
             $line = substr($line, 0, $commentPos);
             $line = rtrim($line);
         }
 
-        $line = preg_replace("/\s+/", "\t", $line);
+        $line = preg_replace('/\\s+/', "\t", $line);
         $parts = explode("\t", $line);
         $numOfParts = count($parts);
 
@@ -124,31 +124,34 @@ $command->setCode(function (InputInterface $input, OutputInterface $output) use 
                     'type' => (int) $parts[2],
                     'vendor' => $vendorContext,
                 ];
+
                 break;
             case 'BEGIN-VENDOR':
-                if ($numOfParts !== 2) {
+                if (2 !== $numOfParts) {
                     throw new \RuntimeException('Unable to parse "'.$line.'"');
                 }
 
-                if (array_key_exists($parts[1], $vendors) === false) {
+                if (false === array_key_exists($parts[1], $vendors)) {
                     throw new \RuntimeException('Unknown vendor "'.$parts[1].'"');
                 }
 
                 $vendorContext = $vendors[$parts[1]]['identifier'];
+
                 break;
             case 'END-VENDOR':
-                if ($numOfParts !== 2) {
+                if (2 !== $numOfParts) {
                     throw new \RuntimeException('Unable to parse "'.$line.'"');
                 }
 
                 $vendorContext = null;
+
                 break;
             case 'VALUE':
-                if ($numOfParts !== 4) {
+                if (4 !== $numOfParts) {
                     throw new \RuntimeException('Unable to parse "'.$line.'"');
                 }
 
-                if (ctype_digit($parts[3]) === false) {
+                if (false === ctype_digit($parts[3])) {
                     throw new \RuntimeException($parts[3].' is not an integer');
                 }
 
@@ -158,9 +161,10 @@ $command->setCode(function (InputInterface $input, OutputInterface $output) use 
                     'constant' => $constant,
                     'value' => (int) $parts[3],
                 ];
+
                 break;
             case 'VENDOR':
-                if ($numOfParts !== 3) {
+                if (3 !== $numOfParts) {
                     throw new \RuntimeException('Unable to parse "'.$line.'"');
                 }
 
@@ -168,6 +172,7 @@ $command->setCode(function (InputInterface $input, OutputInterface $output) use 
                     'identifier' => (int) $parts[2],
                     'name' => $parts[1],
                 ];
+
                 break;
             default:
                 throw new \RuntimeException('Unknown kind "'.$parts[0].'"');

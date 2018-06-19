@@ -27,7 +27,7 @@ final class PacketEncoder
 
     public function __construct(AttributeEncoder $attributeEncoder = null)
     {
-        if ($attributeEncoder === null) {
+        if (null === $attributeEncoder) {
             $attributeEncoder = new AttributeEncoder();
         }
 
@@ -69,15 +69,13 @@ final class PacketEncoder
             throw new InvalidCodeException('Packet of type "'.$parts['code'].'" is not yet supported');
         }
 
-        $packet = new Packet(
+        return new Packet(
             $code,
             $secret,
             $this->attributes->decode($parts['attributes'], $parts['authenticator'], $secret),
             $parts['authenticator'],
             $parts['identifier']
         );
-
-        return $packet;
     }
 
     /**
@@ -103,6 +101,7 @@ final class PacketEncoder
         switch ($packetCode) {
             case PacketType::ACCESS_REQUEST:
                 $authenticator = $packet->getAuthenticator();
+
                 break;
             case PacketType::ACCESS_ACCEPT:
             case PacketType::ACCESS_REJECT:
@@ -115,16 +114,17 @@ final class PacketEncoder
             case PacketType::COA_REQUEST:
             case PacketType::COA_ACK:
             case PacketType::COA_NAK:
-                if (in_array($packetCode, [
+                if (false === in_array($packetCode, [
                     PacketType::ACCOUNTING_REQUEST,
                     PacketType::DISCONNECT_REQUEST,
                     PacketType::COA_REQUEST,
-                ], true) === false) {
+                ], true)) {
                     $authenticator = $packet->getAuthenticator();
                 }
 
                 $message = $this->encodePacket($packet, $length, $authenticator, $attributes);
                 $authenticator = md5($message.$packet->getSecret(), true);
+
                 break;
             default:
                 throw new InvalidCodeException('Packet of type "'.$packetCode.'" is not yet supported');

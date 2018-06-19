@@ -20,6 +20,10 @@ use Boo\Radius\PacketEncoder;
 use Boo\Radius\PacketType;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 final class PacketEncoderTest extends TestCase
 {
     /**

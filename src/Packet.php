@@ -54,11 +54,11 @@ final class Packet
         $authenticator = null,
         $identifier = null
     ) {
-        if ($authenticator === null) {
+        if (null === $authenticator) {
             $authenticator = random_bytes(16);
         }
 
-        if ($identifier === null) {
+        if (null === $identifier) {
             $identifier = random_int(0, 255);
         }
 
@@ -80,7 +80,7 @@ final class Packet
      */
     public function getAttribute($attribute)
     {
-        if (array_key_exists($attribute, $this->attributes) === false) {
+        if (false === array_key_exists($attribute, $this->attributes)) {
             throw new AttributeException('Attribute "'.$attribute.'" not found in packet');
         }
 
@@ -96,7 +96,7 @@ final class Packet
      */
     public function getAttributeString($attribute)
     {
-        if (array_key_exists($attribute, $this->attributes) === false) {
+        if (false === array_key_exists($attribute, $this->attributes)) {
             throw new AttributeException('Attribute "'.$attribute.'" not found in packet');
         }
 
@@ -152,7 +152,7 @@ final class Packet
      */
     public function getUniqueAttribute($attribute)
     {
-        if (array_key_exists($attribute, $this->attributes) === false) {
+        if (false === array_key_exists($attribute, $this->attributes)) {
             throw new AttributeException('Attribute "'.$attribute.'" not found in packet');
         }
 

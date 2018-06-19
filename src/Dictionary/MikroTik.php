@@ -353,8 +353,8 @@ final class MikroTik implements DictionaryInterface
      */
     private static $vendors = [
         [
-           'identifier' => 14988,
-           'name' => 'Mikrotik',
+            'identifier' => 14988,
+            'name' => 'Mikrotik',
         ],
     ];
 

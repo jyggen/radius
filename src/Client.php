@@ -39,7 +39,7 @@ final class Client
      */
     public function __construct($address, $timeout = null, PacketEncoder $encoder = null)
     {
-        if ($encoder === null) {
+        if (null === $encoder) {
             $encoder = new PacketEncoder();
         }
 
@@ -68,13 +68,13 @@ final class Client
 
         $this->socket->write($request);
 
-        if ($this->timeout !== null && $this->socket->selectRead($this->timeout) === false) {
+        if (null !== $this->timeout && false === $this->socket->selectRead($this->timeout)) {
             throw new ClientException('Client timed out while waiting for a response', SOCKET_ETIMEDOUT);
         }
 
         $response = $this->socket->read(PacketEncoder::MAX_PACKET_LENGTH);
 
-        if (is_authentic_response($request, $response, $packet->getSecret()) === false) {
+        if (false === is_authentic_response($request, $response, $packet->getSecret())) {
             throw new ClientException('The received response is not authentic and has likely been tampered with');
         }
 

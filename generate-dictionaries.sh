@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 
+./bin/generate https://raw.githubusercontent.com/FreeRADIUS/freeradius-server/v3.0.x/share/dictionary
+
 BASE_URL=https://raw.githubusercontent.com/FreeRADIUS/freeradius-server/v3.0.x/share/
 DICTIONARIES=(
     MikroTik
