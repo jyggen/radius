@@ -40,7 +40,7 @@ jobs:
 
         - &TEST_JOB
             stage: Test
-            php: 7.0
+            php: 7.2
             install:
                 - travis_retry composer update $DEFAULT_COMPOSER_FLAGS $COMPOSER_FLAGS
                 - composer info -D | sort
@@ -59,12 +59,12 @@ jobs:
 
         -
             <<: *TEST_JOB
-            stage: Test
-            php: 7.1
+            php: 7.0
 
         -
             <<: *TEST_JOB
-            php: 7.2
+            stage: Test
+            php: 7.1
 
         -
             <<: *TEST_JOB
