@@ -22,7 +22,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
- * @coversNothing
+ * @covers \Boo\Radius\PacketEncoder
  */
 final class PacketEncoderTest extends TestCase
 {

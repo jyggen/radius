@@ -11,6 +11,8 @@
 
 namespace Boo\Radius\Attributes;
 
+use Boo\Radius\Exceptions\InvalidArgumentException;
+
 final class DateAttribute implements AttributeInterface
 {
     /**
@@ -28,10 +30,14 @@ final class DateAttribute implements AttributeInterface
     /**
      * {@inheritdoc}
      *
-     * @param \DateTimeImmutable $value
+     * @param \DateTimeInterface $value
      */
     public static function encode($value, $authenticator, $secret, array $options = null)
     {
+        if ($value instanceof \DateTimeImmutable === false) {
+            throw new InvalidArgumentException('Value must implement interface DateTimeInterface');
+        }
+
         return pack('N', $value->getTimestamp());
     }
 }
