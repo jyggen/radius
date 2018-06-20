@@ -34,7 +34,7 @@ final class DateAttribute implements AttributeInterface
      */
     public static function encode($value, $authenticator, $secret, array $options = null)
     {
-        if ($value instanceof \DateTimeImmutable === false) {
+        if (false === $value instanceof \DateTimeImmutable) {
             throw new InvalidArgumentException('Value must implement interface DateTimeInterface');
         }
 
