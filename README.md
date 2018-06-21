@@ -42,14 +42,23 @@ if ($response->getType() !== PacketType::ACCESS_ACCEPT()) {
 The following RADIUS dictionaries are supported out-of-the-box:
 
 * MikroTik
-* RFC 2865 (*)
-* RFC 2866 (*)
-* RFC 2867 (*)
-* RFC 2868 (*)
-* RFC 2869 (*)
-* RFC 5176 (*)
-
-Dictionaries that are enabled in the encoder by default are denoted with (*).
+* RFC 2865
+* RFC 2866
+* RFC 2867
+* RFC 2868
+* RFC 2869
+* RFC 3162
+* RFC 3576
+* RFC 3580
+* RFC 4072
+* RFC 4372
+* RFC 4603
+* RFC 4675
+* RFC 4679
+* RFC 4818
+* RFC 4849
+* RFC 5090
+* RFC 5176
 
 ### Custom Dictionary
 

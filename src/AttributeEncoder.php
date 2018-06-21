@@ -50,6 +50,7 @@ final class AttributeEncoder
 
     public function __construct()
     {
+        $this->registerDictionary(new Dictionary\MikroTik());
         $this->registerDictionary(new Dictionary\Rfc2865());
         $this->registerDictionary(new Dictionary\Rfc2866());
         $this->registerDictionary(new Dictionary\Rfc2867());
