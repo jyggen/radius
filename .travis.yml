@@ -26,7 +26,7 @@ jobs:
             env: COMPOSER_FLAGS="--no-dev --prefer-stable"
             install:
                 - composer global show friendsofphp/php-cs-fixer -q || travis_retry composer global require $DEFAULT_COMPOSER_FLAGS friendsofphp/php-cs-fixer
-                - composer global show localheinz/composer-normalize -q || travis_retry composer global require $DEFAULT_COMPOSER_FLAGS localheinz/composer-normalize
+                - composer global show ergebnis/composer-normalize -q || travis_retry composer global require $DEFAULT_COMPOSER_FLAGS ergebnis/composer-normalize
                 - composer global show maglnet/composer-require-checker -q || travis_retry composer global require $DEFAULT_COMPOSER_FLAGS maglnet/composer-require-checker
                 - composer global show phpstan/phpstan -q || travis_retry composer global require $DEFAULT_COMPOSER_FLAGS phpstan/phpstan
                 - composer global info -D | sort
